@@ -1,61 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Garnett Work</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body {
-      margin: 0;
-      background: #0b0b0b;
-      color: #ffffff;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
-    }
-    img {
-      max-width: 360px;
-      margin-bottom: 24px;
-    }
-    h1 {
-      font-size: 42px;
-      margin: 0;
-    }
-    p {
-      opacity: 0.7;
-      margin-top: 12px;
-      font-size: 16px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Garnett Work</title>
+
+<style>
+body {
+  margin: 0;
+  background: #0b0b0b;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  text-align: center;
+  max-width: 500px;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  background: #111;
+  border: 1px solid #333;
+  color: white;
+  border-radius: 8px;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(90deg, #d4af37, #f2d06b);
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.result {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  display: none;
+}
+.pass { color: #4CAF50; }
+.fail { color: #ff5252; }
+.medium { color: #f2d06b; }
+
+h1 {
+  margin-bottom: 5px;
+}
+
+p {
+  opacity: 0.7;
+  margin-bottom: 20px;
+}
+</style>
 </head>
+
 <body>
-  <div>
-    <img src="./logo.png" alt="Garnett Work Logo" class="logo">
-    <h1>Garnett Work</h1>
-    <p>Soft launch. Market truth first.</p>
+
+<div class="container">
+  <h1>Hype Sells. Truth Pays.</h1>
+  <p>Market truth for people who don’t want to lose money on bad deals.</p>
+
+  <input id="listingUrl" placeholder="Paste listing URL" />
+  <input id="buyPrice" placeholder="Buy price" type="number" />
+  <select id="condition">
+    <option>Used</option>
+    <option>New</option>
+  </select>
+
+  <button id="getVerdict">Get Teaser Verdict (Free)</button>
+
+  <div class="result" id="resultBox">
+    <h2 id="verdictText"></h2>
+    <p id="details"></p>
   </div>
+</div>
+
 <script>
 document.getElementById("getVerdict").onclick = () => {
-  const url = document.getElementById("listingUrl").value;
-  const price = document.getElementById("buyPrice").value;
 
-  if (!url || !price) {
-    alert("Enter listing URL and price.");
+  const price = parseFloat(document.getElementById("buyPrice").value);
+  const resultBox = document.getElementById("resultBox");
+  const verdictText = document.getElementById("verdictText");
+  const details = document.getElementById("details");
+
+  if (!price) {
+    alert("Enter a buy price.");
     return;
   }
 
-  alert("Teaser Verdict: PASS / FAIL (demo)");
+  const marketValue = 910;
+  const margin = ((marketValue - price) / marketValue) * 100;
+
+  let verdict;
+  let colorClass;
+
+  if (price < 850) {
+    verdict = "PASS";
+    colorClass = "pass";
+  } else if (price < 900) {
+    verdict = "MARGINAL";
+    colorClass = "medium";
+  } else {
+    verdict = "FAIL";
+    colorClass = "fail";
+  }
+
+  verdictText.innerText = verdict;
+  verdictText.className = colorClass;
+
+  details.innerText = 
+    "Market: $" + marketValue +
+    " | Margin: " + margin.toFixed(1) + "%";
+
+  resultBox.style.display = "block";
 };
 </script>
-<button onclick="window.location.href='/verify/'" 
-style="margin-top:40px;padding:16px 28px;font-size:18px;font-weight:600;
-background:linear-gradient(90deg,#d4af37,#f5d76e);
-border:none;border-radius:8px;cursor:pointer;">
-Unlock Truth Packet
-</button>
+
 </body>
 </html>
 
