@@ -37,6 +37,19 @@
     <h1>Garnett Work</h1>
     <p>Soft launch. Market truth first.</p>
   </div>
+<script>
+document.getElementById("getVerdict").onclick = () => {
+  const url = document.getElementById("listingUrl").value;
+  const price = document.getElementById("buyPrice").value;
+
+  if (!url || !price) {
+    alert("Enter listing URL and price.");
+    return;
+  }
+
+  alert("Teaser Verdict: PASS / FAIL (demo)");
+};
+</script>
 </body>
 </html>
 
