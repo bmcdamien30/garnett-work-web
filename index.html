@@ -1,132 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Garnett Work</title>
-
-<style>
-body {
-  margin: 0;
-  background: #0b0b0b;
-  color: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-.container {
-  text-align: center;
-  max-width: 500px;
-}
-
-input, select {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  margin-bottom: 15px;
-  background: #111;
-  border: 1px solid #333;
-  color: white;
-  border-radius: 8px;
-}
-
-button {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(90deg, #d4af37, #f2d06b);
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.result {
-  margin-top: 20px;
-  padding: 15px;
-  border: 1px solid #333;
-  border-radius: 8px;
-  display: none;
-}
-.pass { color: #4CAF50; }
-.fail { color: #ff5252; }
-.medium { color: #f2d06b; }
-
-h1 {
-  margin-bottom: 5px;
-}
-
-p {
-  opacity: 0.7;
-  margin-bottom: 20px;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garnett Work - Teaser Verdict</title>
+    <style>
+        body {
+            margin: 0;
+            background: #0b0b0b;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background: #151515;
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            width: 100%;
+            max-width: 400px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #ffffff;
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .result-box {
+            margin-top: 30px;
+            padding: 20px;
+            border-top: 1px solid #333;
+        }
+        .verdict-value { font-size: 2rem; font-weight: 800; margin: 10px 0; }
+        .pass { color: #00ff88; }
+        .medium { color: #ffcc00; }
+        .fail { color: #ff4444; }
+        .margin-label { color: #888; font-size: 0.9rem; }
+    </style>
 </head>
-
 <body>
 
 <div class="container">
-  <h1>Hype Sells. Truth Pays.</h1>
-  <p>Market truth for people who don’t want to lose money on bad deals.</p>
+    <img src="logo.png" alt="Garnett" style="height: 40px; margin-bottom: 20px;">
+    <h2>Facebook Teaser</h2>
+    
+    <input type="text" placeholder="Facebook Marketplace URL">
+    <input type="number" id="user-price" placeholder="Your Offer Price ($)">
+    
+    <button onclick="getVerdict()">Get Teaser Verdict (Free)</button>
 
-  <input id="listingUrl" placeholder="Paste listing URL" />
-  <input id="buyPrice" placeholder="Buy price" type="number" />
-  <select id="condition">
-    <option>Used</option>
-    <option>New</option>
-  </select>
-
-  <button id="getVerdict">Get Teaser Verdict (Free)</button>
-
-  <div class="result" id="resultBox">
-    <h2 id="verdictText"></h2>
-    <p id="details"></p>
-  </div>
+    <div class="result-box">
+        <div class="margin-label">PROJECTED MARGIN</div>
+        <div id="margin-text" style="font-size: 1.5rem; font-weight: bold;">--%</div>
+        <div id="verdict-text" class="verdict-value">READY</div>
+    </div>
 </div>
 
 <script>
-document.getElementById("getVerdict").onclick = () => {
+function getVerdict() {
+    // 1. Get the price the user typed in
+    const priceInput = document.getElementById('user-price');
+    const price = parseFloat(priceInput.value);
 
-  const price = parseFloat(document.getElementById("buyPrice").value);
-  const resultBox = document.getElementById("resultBox");
-  const verdictText = document.getElementById("verdictText");
-  const details = document.getElementById("details");
+    if (isNaN(price)) {
+        alert("Please enter a valid price.");
+        return;
+    }
 
-  if (!price) {
-    alert("Enter a buy price.");
-    return;
-  }
+    // 2. Set the Market Value (Hardcoded for now at $910)
+    const marketValue = 910;
+    
+    // 3. Calculate the Margin
+    const margin = ((marketValue - price) / marketValue) * 100;
+    
+    let verdict;
+    let colorClass;
 
-  const marketValue = 910;
-  const margin = ((marketValue - price) / marketValue) * 100;
+    // 4. Determine Verdict based on Margin %
+    if (margin >= 10) {
+        verdict = "PASS";
+        colorClass = "pass";
+    } else if (margin > 0) {
+        verdict = "MARGINAL";
+        colorClass = "medium";
+    } else {
+        verdict = "FAIL";
+        colorClass = "fail";
+    }
 
-  let verdict;
-  let colorClass;
-
-  if (price < 850) {
-    verdict = "PASS";
-    colorClass = "pass";
-  } else if (price < 900) {
-    verdict = "MARGINAL";
-    colorClass = "medium";
-  } else {
-    verdict = "FAIL";
-    colorClass = "fail";
-  }
-
-  verdictText.innerText = verdict;
-  verdictText.className = colorClass;
-
-  details.innerText = 
-    "Market: $" + marketValue +
-    " | Margin: " + margin.toFixed(1) + "%";
-
-  resultBox.style.display = "block";
-};
+    // 5. Update the UI
+    const verdictElement = document.getElementById('verdict-text');
+    const marginElement = document.getElementById('margin-text');
+    
+    verdictElement.innerText = verdict;
+    verdictElement.className = 'verdict-value ' + colorClass;
+    marginElement.innerText = margin.toFixed(1) + "%";
+}
 </script>
 
 </body>
 </html>
+
+
+
+
 
