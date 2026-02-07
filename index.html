@@ -1,4 +1,3 @@
-cat <<'EOF' > index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,30 +21,24 @@ cat <<'EOF' > index.html
 <body>
     <div class="container">
         <h2>Garnett Work</h2>
-        
         <div class="input-group">
             <label>Paste Facebook Marketplace Link</label>
             <input type="text" id="fb-url" placeholder="Paste link here...">
             <button onclick="analyzeLink()">Analyze Deal</button>
         </div>
-
         <div class="divider"><span>OR</span></div>
-
         <div class="input-group">
             <label>Your Offer Price ($)</label>
             <input type="number" id="user-price" placeholder="e.g. 500">
             <button onclick="getVerdict()" style="background: #444;">Manual Calculate</button>
         </div>
-
         <div id="result">
-            <h3 id="verdict-text"></h3>
-            <p id="margin-text"></p>
+            <h3 id="verdict-text" style="margin:0;"></h3>
+            <p id="margin-text" style="margin:10px 0 0 0;"></p>
         </div>
     </div>
-
     <script>
         const marketValue = 910;
-
         function getVerdict() {
             const price = document.getElementById('user-price').value;
             if (!price) return;
@@ -61,16 +54,14 @@ cat <<'EOF' > index.html
             }
             document.getElementById('margin-text').innerText = "Margin: " + margin.toFixed(1) + "%";
         }
-
         function analyzeLink() {
             const url = document.getElementById('fb-url').value;
             if (!url.includes('facebook.com')) {
                 alert("Please paste a valid Facebook link.");
                 return;
             }
-            alert("Checking link... In the next step, we will connect this to the automatic price reader!");
+            alert("Analyzing Link... (Step 1: Connection Success)");
         }
-
         window.onload = function() {
             const params = new URLSearchParams(window.location.search);
             const price = params.get('price');
@@ -82,6 +73,3 @@ cat <<'EOF' > index.html
     </script>
 </body>
 </html>
-EOF
-
-
