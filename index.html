@@ -1,126 +1,87 @@
+cat <<'EOF' > index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Garnett Work - Teaser Verdict</title>
+    <title>Garnett Work - Deal Analyzer</title>
     <style>
-        body {
-            margin: 0;
-            background: #0b0b0b;
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            text-align: center;
-            background: #151515;
-            padding: 40px;
-            border-radius: 12px;
-            border: 1px solid #333;
-            width: 100%;
-            max-width: 400px;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: #222;
-            border: 1px solid #444;
-            color: white;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #ffffff;
-            color: #000;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .result-box {
-            margin-top: 30px;
-            padding: 20px;
-            border-top: 1px solid #333;
-        }
-        .verdict-value { font-size: 2rem; font-weight: 800; margin: 10px 0; }
-        .pass { color: #00ff88; }
-        .medium { color: #ffcc00; }
-        .fail { color: #ff4444; }
-        .margin-label { color: #888; font-size: 0.9rem; }
+        body { font-family: -apple-system, sans-serif; background: #121212; color: white; padding: 40px; text-align: center; }
+        .container { max-width: 400px; margin: auto; background: #1e1e1e; padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; margin-bottom: 8px; font-size: 14px; color: #aaa; }
+        input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #333; background: #252525; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        #result { margin-top: 20px; padding: 20px; border-radius: 12px; display: none; }
+        .pass { background: #064e3b; color: #34d399; border: 1px solid #059669; }
+        .fail { background: #7f1d1d; color: #f87171; border: 1px solid #dc2626; }
+        .divider { margin: 25px 0; border-top: 1px solid #333; position: relative; }
+        .divider span { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #1e1e1e; padding: 0 10px; color: #666; font-size: 12px; }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h2>Garnett Work</h2>
+        
+        <div class="input-group">
+            <label>Paste Facebook Marketplace Link</label>
+            <input type="text" id="fb-url" placeholder="Paste link here...">
+            <button onclick="analyzeLink()">Analyze Deal</button>
+        </div>
 
-<div class="container">
-    <img src="logo.png" alt="Garnett" style="height: 40px; margin-bottom: 20px;">
-    <h2>Facebook Teaser</h2>
-    
-    <input type="text" placeholder="Facebook Marketplace URL">
-    <input type="number" id="user-price" placeholder="Your Offer Price ($)">
-    
-    <button onclick="getVerdict()">Get Teaser Verdict (Free)</button>
+        <div class="divider"><span>OR</span></div>
 
-    <div class="result-box">
-        <div class="margin-label">PROJECTED MARGIN</div>
-        <div id="margin-text" style="font-size: 1.5rem; font-weight: bold;">--%</div>
-        <div id="verdict-text" class="verdict-value">READY</div>
+        <div class="input-group">
+            <label>Your Offer Price ($)</label>
+            <input type="number" id="user-price" placeholder="e.g. 500">
+            <button onclick="getVerdict()" style="background: #444;">Manual Calculate</button>
+        </div>
+
+        <div id="result">
+            <h3 id="verdict-text"></h3>
+            <p id="margin-text"></p>
+        </div>
     </div>
-</div>
 
-<script>
-function getVerdict() {
-    // 1. Get the price the user typed in
-    const priceInput = document.getElementById('user-price');
-    const price = parseFloat(priceInput.value);
+    <script>
+        const marketValue = 910;
 
-    if (isNaN(price)) {
-        alert("Please enter a valid price.");
-        return;
-    }
+        function getVerdict() {
+            const price = document.getElementById('user-price').value;
+            if (!price) return;
+            const margin = ((marketValue - price) / marketValue) * 100;
+            const res = document.getElementById('result');
+            res.style.display = 'block';
+            if (margin >= 10) {
+                res.className = 'pass';
+                document.getElementById('verdict-text').innerText = "PASS";
+            } else {
+                res.className = 'fail';
+                document.getElementById('verdict-text').innerText = "FAIL";
+            }
+            document.getElementById('margin-text').innerText = "Margin: " + margin.toFixed(1) + "%";
+        }
 
-    // 2. Set the Market Value (Hardcoded for now at $910)
-    const marketValue = 910;
-    
-    // 3. Calculate the Margin
-    const margin = ((marketValue - price) / marketValue) * 100;
-    
-    let verdict;
-    let colorClass;
+        function analyzeLink() {
+            const url = document.getElementById('fb-url').value;
+            if (!url.includes('facebook.com')) {
+                alert("Please paste a valid Facebook link.");
+                return;
+            }
+            alert("Checking link... In the next step, we will connect this to the automatic price reader!");
+        }
 
-    // 4. Determine Verdict based on Margin %
-    if (margin >= 10) {
-        verdict = "PASS";
-        colorClass = "pass";
-    } else if (margin > 0) {
-        verdict = "MARGINAL";
-        colorClass = "medium";
-    } else {
-        verdict = "FAIL";
-        colorClass = "fail";
-    }
-
-    // 5. Update the UI
-    const verdictElement = document.getElementById('verdict-text');
-    const marginElement = document.getElementById('margin-text');
-    
-    verdictElement.innerText = verdict;
-    verdictElement.className = 'verdict-value ' + colorClass;
-    marginElement.innerText = margin.toFixed(1) + "%";
-}
-</script>
-
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            const price = params.get('price');
+            if (price) {
+                document.getElementById('user-price').value = price;
+                getVerdict();
+            }
+        };
+    </script>
 </body>
 </html>
-
-
-
+EOF
 
 
