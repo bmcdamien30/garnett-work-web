@@ -8,8 +8,7 @@
 <style>
 :root {
   --gold: #FFD700;
-  --gold-dim: #CAA74E;
-  --black: #0A0A0A;
+  --gold-glow: rgba(255, 215, 0, 0.4);
   --card-bg: #111111;
   --red: #FF4B4B;
 }
@@ -20,167 +19,102 @@ body {
   background: radial-gradient(circle at top, #1a1a1a 0%, #000000 70%);
   color: white;
   min-height: 100vh;
-  overflow-x: hidden;
 }
 
-.container {
-  max-width: 1100px;
-  margin: auto;
-  padding: 20px 20px 80px 20px;
-}
+.container { max-width: 1100px; margin: auto; padding: 20px; text-align: center; }
 
-/* HERO SECTION */
-.hero { text-align: center; }
-
+/* LOGO & HERO */
 .logo {
   width: 940px; 
   max-width: 100%;
   margin: 0 auto 10px auto;
   display: block;
-  filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.2));
+  filter: drop-shadow(0 0 30px var(--gold-glow));
 }
 
-h1 { 
-  font-size: 52px; 
-  margin: 0 0 10px 0; 
-  letter-spacing: -2px; 
-  font-weight: 800;
-}
+h1 { font-size: 52px; margin: 0; letter-spacing: -2px; font-weight: 800; }
+.sub-headline { color: #888; font-size: 18px; margin-top: 10px; margin-bottom: 40px; }
 
-.sub {
-  font-size: 18px;
-  color: #888;
-  margin-bottom: 40px;
-  max-width: 700px;
-  margin: 0 auto 40px auto;
-  line-height: 1.4;
-}
-
-/* FORM CARD MATCHING YOUR SCREENSHOT */
+/* FORM CARD */
 .form-card {
   background: var(--card-bg);
   padding: 30px;
   border-radius: 20px;
   max-width: 440px;
   margin: 0 auto 80px auto;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
   border: 1px solid #222;
   text-align: left;
 }
 
-label {
-    color: var(--gold);
-    font-size: 11px;
-    font-weight: 900;
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 6px;
-    letter-spacing: 1px;
-}
-
+label { color: var(--gold); font-size: 11px; font-weight: 900; text-transform: uppercase; display: block; margin-bottom: 6px; }
 input, select {
-  width: 100%;
-  padding: 16px;
-  margin-bottom: 20px;
-  border-radius: 12px;
-  border: 1px solid #333;
-  background: #000;
-  color: white;
-  box-sizing: border-box;
-  font-size: 16px;
+  width: 100%; padding: 16px; margin-bottom: 20px; border-radius: 12px;
+  border: 1px solid #333; background: #000; color: white; box-sizing: border-box;
 }
 
 .gold-btn {
-  width: 100%;
-  padding: 20px;
-  border: none;
-  border-radius: 15px;
-  font-weight: 900;
+  width: 100%; padding: 20px; border: none; border-radius: 15px; font-weight: 900;
   background: linear-gradient(180deg, #F5D142 0%, #D4AF37 100%);
-  color: black;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-size: 16px;
+  color: black; cursor: pointer; text-transform: uppercase;
+  box-shadow: 0 0 20px var(--gold-glow); transition: 0.3s;
+}
+.gold-btn:hover { transform: scale(1.02); box-shadow: 0 0 30px var(--gold-glow); }
+
+/* PRICING SECTION - FROM SCREENSHOT */
+.pricing-header { margin-top: 100px; }
+.pricing-header h2 { font-size: 32px; margin-bottom: 10px; }
+.pricing-header p { color: #888; margin-bottom: 40px; }
+
+.pricing-grid {
+  display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 100px;
 }
 
-/* MODAL MATCHING SCREENSHOT 8 EXACTLY */
+.price-card {
+  background: #0D0D0D; padding: 40px 20px; border-radius: 20px;
+  border: 1px solid #222; width: 280px; transition: 0.3s;
+}
+
+.price-card h3 { font-size: 18px; margin: 0; }
+.price-card .amount { 
+    font-size: 36px; font-weight: 900; color: var(--gold); 
+    margin: 15px 0; text-shadow: 0 0 15px var(--gold-glow); 
+}
+.price-card p { color: #888; font-size: 14px; line-height: 1.5; margin: 0; }
+
+/* MODAL */
 #verdict-modal {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.92);
-  z-index: 9999;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(10px);
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.9); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(8px);
 }
 
 .modal-content {
-  background: #0D0D0D;
-  padding: 50px 30px;
-  border-radius: 40px;
-  border: 2px solid var(--gold);
-  text-align: center;
-  max-width: 450px;
-  width: 90%;
+  background: #0D0D0D; padding: 50px 30px; border-radius: 40px;
+  border: 2px solid var(--gold); text-align: center; max-width: 450px; width: 90%;
 }
 
-.modal-content h2 { 
-    font-size: 42px; 
-    font-weight: 900; 
-    margin: 0 0 20px 0; 
-    text-transform: uppercase;
-}
+.modal-content h2 { font-size: 42px; font-weight: 900; margin: 0 0 20px 0; text-transform: uppercase; color: var(--gold); }
+.signal-pill { background: #1A1A1A; padding: 20px; border-radius: 18px; margin: 20px 0; font-weight: 800; color: var(--gold); border: 1px solid #222; }
 
-.modal-content p { 
-    color: #E0E0E0; 
-    font-size: 17px; 
-    line-height: 1.6; 
-    margin-bottom: 30px;
-}
-
-.signal-pill {
-  background: #1A1A1A;
-  padding: 20px;
-  border-radius: 18px;
-  margin-bottom: 15px;
-  font-weight: 800;
-  font-size: 18px;
-  border: 1px solid #222;
-}
-
-.close-btn {
-  background: var(--gold);
-  color: black;
-  width: 100%;
-  padding: 20px;
-  border: none;
-  border-radius: 18px;
-  font-weight: 900;
-  font-size: 18px;
-  cursor: pointer;
-  text-transform: uppercase;
-}
+/* FOOTER */
+.footer { padding: 60px 0; border-top: 1px solid #111; color: #555; font-size: 13px; line-height: 1.6; }
 </style>
 </head>
 
 <body>
 
 <div id="verdict-modal">
-    <div class="modal-content" id="modal-box">
-        <h2 id="verdict-title">VERDICT: PASS</h2>
-        <p id="verdict-desc"></p>
-        <div class="signal-pill" id="signal-text">Signal Strength: High</div>
-        <button class="close-btn" onclick="closeModal()">Close Verdict</button>
+    <div class="modal-content">
+        <h2 id="v-title">VERDICT: PASS</h2>
+        <p id="v-desc"></p>
+        <div class="signal-pill" id="v-signal">Signal Strength: High</div>
+        <button class="gold-btn" onclick="closeModal()" style="border-radius:18px;">Close Verdict</button>
     </div>
 </div>
 
 <div class="container">
-  <div class="hero">
-    <img src="logo.png" class="logo" alt="Garnett Work Logo" />
+    <img src="logo.png" class="logo" alt="Garnett Work">
     <h1>Verify with Confidence.</h1>
-    <p class="sub">Stop guessing. We calculate the hidden fees and shipping so you see the real profit.</p>
+    <p class="sub-headline">Stop guessing. We calculate the hidden fees and shipping so you see the real profit.</p>
 
     <div class="form-card">
       <label>Platform</label>
@@ -194,31 +128,48 @@ input, select {
       <input type="text" id="urlInput" placeholder="Paste link here...">
       
       <div style="display:flex; gap:12px;">
-        <div style="flex:1;">
-            <label>Buy Price ($)</label>
-            <input type="number" id="buyPrice" placeholder="0">
-        </div>
-        <div style="flex:1;">
-            <label>Est. Sale ($)</label>
-            <input type="number" id="marketValue" placeholder="0">
-        </div>
+        <div style="flex:1;"><label>Buy Price ($)</label><input type="number" id="buyPrice" placeholder="0"></div>
+        <div style="flex:1;"><label>Est. Sale ($)</label><input type="number" id="marketValue" placeholder="0"></div>
       </div>
 
-      <div id="shipping-row">
-        <label>Estimated Shipping Cost ($)</label>
-        <input type="number" id="shippingCost" value="12">
-      </div>
+      <div id="shipping-row"><label>Estimated Shipping Cost ($)</label><input type="number" id="shippingCost" value="12"></div>
       
       <button class="gold-btn" onclick="runTruthMath()">Get Teaser Verdict (Free)</button>
     </div>
-  </div>
+
+    <div class="pricing-header">
+        <h2>Pricing</h2>
+        <p>Preview the signal. Unlock the proof.</p>
+    </div>
+
+    <div class="pricing-grid">
+        <div class="price-card">
+            <h3>Free Teaser</h3>
+            <div class="amount">FREE</div>
+            <p>Instant PASS/FAIL + headline market number.</p>
+        </div>
+        <div class="price-card">
+            <h3>Single Unlock</h3>
+            <div class="amount">$0.25</div>
+            <p>Full Truth Packet: comps, fee math, rules fired, receipt.</p>
+        </div>
+        <div class="price-card">
+            <h3>Starter</h3>
+            <div class="amount">$10 / mo</div>
+            <p>50 unlocks included. Scalable for active flippers.</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        Garnett Work © 2026 — The Market Oracle<br>
+        Payment never changes truth.
+    </div>
 </div>
 
 <script>
     function toggleShipping() {
-        const platform = document.getElementById('platform').value;
-        const row = document.getElementById('shipping-row');
-        row.style.display = (platform === 'fb_local') ? 'none' : 'block';
+        const p = document.getElementById('platform').value;
+        document.getElementById('shipping-row').style.display = (p === 'fb_local') ? 'none' : 'block';
     }
 
     function runTruthMath() {
@@ -227,44 +178,18 @@ input, select {
         const ship = parseFloat(document.getElementById('shippingCost').value) || 0;
         const platform = document.getElementById('platform').value;
 
-        let feePercent = 0;
-        if (platform === 'ebay') feePercent = 0.135;
-        if (platform === 'fb_shipped') feePercent = 0.10;
-
-        const platformFees = (platform === 'fb_shipped') ? (sell + ship) * feePercent : (sell * feePercent);
-        const actualShip = (platform === 'fb_local') ? 0 : ship;
-        const netProfit = sell - platformFees - actualShip - buy;
-        const margin = (netProfit / sell) * 100;
-
-        const title = document.getElementById('verdict-title');
-        const desc = document.getElementById('verdict-desc');
-        const signal = document.getElementById('signal-text');
-        const modalBox = document.getElementById('modal-box');
-
-        if (netProfit > 0 && margin >= 15) {
-            title.innerHTML = "VERDICT: PASS";
-            title.style.color = "var(--gold)";
-            modalBox.style.borderColor = "var(--gold)";
-            desc.innerHTML = `This is a high-probability flip. After <b>$${platformFees.toFixed(2)}</b> in fees and shipping, your net profit is <b>$${netProfit.toFixed(2)}</b>.`;
-            signal.innerHTML = "Signal Strength: High";
-            signal.style.color = "var(--gold)";
-        } else {
-            title.innerHTML = "VERDICT: FAIL";
-            title.style.color = "var(--red)";
-            modalBox.style.borderColor = "var(--red)";
-            desc.innerHTML = netProfit < 0 
-                ? `You will lose <b>$${Math.abs(netProfit).toFixed(2)}</b> on this deal after fees.` 
-                : `Margin is too thin (${margin.toFixed(1)}%). After fees, you only clear <b>$${netProfit.toFixed(2)}</b>.`;
-            signal.innerHTML = "Signal Strength: Weak";
-            signal.style.color = "var(--red)";
-        }
-
+        let fees = (platform === 'ebay') ? (sell * 0.135 + 0.3) : (platform === 'fb_shipped' ? (sell + ship) * 0.1 : 0);
+        let profit = sell - fees - (platform === 'fb_local' ? 0 : ship) - buy;
+        
+        document.getElementById('v-desc').innerHTML = `After <b>$${fees.toFixed(2)}</b> in fees and shipping, your net profit is <b>$${profit.toFixed(2)}</b>.`;
+        document.getElementById('v-title').innerHTML = profit > 0 ? "VERDICT: PASS" : "VERDICT: FAIL";
+        document.getElementById('v-title').style.color = profit > 0 ? "var(--gold)" : "var(--red)";
+        document.getElementById('v-signal').innerHTML = profit > 0 ? "Signal Strength: High" : "Signal Strength: Weak";
+        
         document.getElementById('verdict-modal').style.display = 'flex';
     }
 
-    function closeModal() {
-        document.getElementById('verdict-modal').style.display = 'none';
-    }
+    function closeModal() { document.getElementById('verdict-modal').style.display = 'none'; }
 </script>
 
 </body>
