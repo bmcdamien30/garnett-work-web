@@ -24,10 +24,23 @@ body {
 }
 
 .logo {
-  width: 260px;
-  margin: 0 auto 30px auto;
+  width: 380px;          /* Bigger */
+  max-width: 90%;        /* Keeps it responsive on mobile */
+  margin: 0 auto 40px auto;
   display: block;
+  filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.4));
+  transition: transform 0.3s ease;
 }
+
+.logo:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.7));
+}
+
+
+
+
+
 
 h1 {
   font-size: 48px;
