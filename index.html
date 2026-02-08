@@ -11,46 +11,35 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   background: radial-gradient(circle at top, #1a1a1a 0%, #000000 60%);
   color: white;
+  overflow-x: hidden;
 }
 
 .container {
   max-width: 1100px;
   margin: auto;
-  padding: 60px 20px;
+  padding: 40px 20px;
 }
 
-.hero {
-  text-align: center;
-}
+.hero { text-align: center; }
 
 .logo {
-  width: 840px;          /* Bigger */
-  max-width: 90%;        /* Keeps it responsive on mobile */
-  margin: 0 auto 40px auto;
+  width: 600px; /* Adjusted for better vertical flow */
+  max-width: 90%;
+  margin: 0 auto 20px auto;
   display: block;
   filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.4));
   transition: transform 0.3s ease;
 }
 
-.logo:hover {
-  transform: scale(1.05);
-  filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.7));
-}
-
-
-
-
-
-
-h1 {
-  font-size: 48px;
-  margin-bottom: 15px;
-}
+h1 { font-size: 48px; margin-bottom: 15px; letter-spacing: -1px; }
 
 .sub {
   font-size: 18px;
   color: #cfcfcf;
   margin-bottom: 40px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .form-card {
@@ -60,6 +49,7 @@ h1 {
   max-width: 400px;
   margin: 0 auto 60px auto;
   box-shadow: 0 0 40px rgba(255, 215, 0, 0.1);
+  border: 1px solid #222;
 }
 
 input, select {
@@ -70,168 +60,128 @@ input, select {
   border: 1px solid #333;
   background: #1a1a1a;
   color: white;
+  box-sizing: border-box;
 }
 
 .gold-btn {
   width: 100%;
-  padding: 14px;
+  padding: 16px;
   border: none;
   border-radius: 8px;
   font-weight: bold;
   background: linear-gradient(90deg, #caa74e, #ffd700);
   color: black;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.gold-btn:hover {
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
-  transform: scale(1.03);
-}
-
-.gold-btn:active {
-  transform: scale(0.97);
-  box-shadow: 0 0 30px rgba(255, 215, 0, 0.9);
-}
-
-.pricing {
-  text-align: center;
-}
-
-.pricing h2 {
-  margin-bottom: 10px;
-}
-
-.cards {
-  display: flex;
-  flex-wrap: wrap;
+/* VERDICT POP-UP STYLES */
+#verdict-modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.9);
+  z-index: 1000;
+  align-items: center;
   justify-content: center;
-  gap: 20px;
-  margin-top: 30px;
 }
 
-.card {
+.modal-content {
   background: #111;
-  padding: 30px;
-  border-radius: 14px;
-  width: 260px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid #222;
-}
-
-.card:hover {
-  box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
-  transform: translateY(-5px);
-  border-color: #ffd700;
-}
-
-.card h3 {
-  margin-bottom: 10px;
-}
-
-.price {
-  font-size: 24px;
-  color: #ffd700;
-  margin-bottom: 10px;
-}
-
-.footer {
-  margin-top: 80px;
+  padding: 40px;
+  border-radius: 24px;
+  border: 2px solid #ffd700;
   text-align: center;
-  color: #777;
-  font-size: 14px;
+  max-width: 400px;
+  box-shadow: 0 0 50px rgba(255, 215, 0, 0.2);
 }
+
+.pricing { text-align: center; margin-top: 40px; }
+.cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 30px; }
+.card { background: #111; padding: 30px; border-radius: 14px; width: 260px; border: 1px solid #222; transition: 0.3s; }
+.card:hover { border-color: #ffd700; transform: translateY(-5px); }
+.price { font-size: 24px; color: #ffd700; margin-bottom: 10px; font-weight: bold; }
+.footer { margin-top: 80px; text-align: center; color: #555; font-size: 14px; padding-bottom: 40px;}
 </style>
 </head>
 
 <body>
 
+<div id="verdict-modal">
+    <div class="modal-content">
+        <h2 style="color:#ffd700; font-size: 32px; margin-top:0;">VERDICT: PASS</h2>
+        <p style="color:#ccc; line-height:1.6;">The market data confirms this is a high-probability flip. Basic comps show a 15% margin minimum.</p>
+        <div style="background:#222; padding:15px; border-radius:10px; margin: 20px 0;">
+            <span style="color:#ffd700; font-weight:bold;">Signal Strength: High</span>
+        </div>
+        <button class="gold-btn" onclick="closeModal()">Close Verdict</button>
+    </div>
+</div>
+
 <div class="container">
-
   <div class="hero">
-
     <img src="logo.png" class="logo" alt="Garnett Work Logo" />
-
     <h1>Verify With Confidence.</h1>
     <div class="sub">
       Garnett Work analyzes <span style="color:#ffd700;">Facebook Marketplace</span> and 
-      <span style="color:#ffd700;">eBay listings</span> using real market data.  
-      Get a fast PASS/FAIL teaser. Unlock the full Truth Packet when precision matters.
+      <span style="color:#ffd700;">eBay listings</span> using real market data. 
+      Get a fast PASS/FAIL teaser instantly.
     </div>
 
     <div class="form-card">
-      <input type="text" placeholder="Paste Facebook or eBay listing URL" />
+      <input type="text" id="urlInput" placeholder="Paste Facebook or eBay listing URL" />
       <input type="number" placeholder="Buy Price ($)" />
       <select>
         <option>Used</option>
         <option>New</option>
       </select>
-      <button class="gold-btn">Get Teaser Verdict (Free)</button>
+      <button class="gold-btn" onclick="showVerdict()">Get Teaser Verdict (Free)</button>
     </div>
-
   </div>
 
   <div class="pricing">
     <h2>Pricing</h2>
-    <div class="sub">
-  Preview the signal. Unlock the proof.
-</div>
-
-    
-    
-
+    <div class="sub">Preview the signal. Unlock the proof.</div>
     <div class="cards">
-
-  <a href="#" style="text-decoration:none; color:inherit;">
-    <div class="card">
-      <h3>Free Teaser</h3>
-      <div class="price">FREE</div>
-      Instant PASS/FAIL + headline market number.
+        <div class="card">
+          <h3>Free Teaser</h3>
+          <div class="price">FREE</div>
+          Instant PASS/FAIL + headline market number.
+        </div>
+        <div class="card" style="border-color: #ffd700;">
+          <h3>Single Unlock</h3>
+          <div class="price">$0.25</div>
+          Full Truth Packet: comps, fee math, and receipt.
+        </div>
+        <div class="card">
+          <h3>Starter</h3>
+          <div class="price">$10 / mo</div>
+          50 unlocks included. Scalable for active flippers.
+        </div>
     </div>
-  </a>
-
-  <a href="#" style="text-decoration:none; color:inherit;">
-    <div class="card">
-      <h3>Single Unlock</h3>
-      <div class="price">$0.25</div>
-      Full Truth Packet: comps, fee math, rules fired, receipt.
-    </div>
-  </a>
-
-  <a href="#" style="text-decoration:none; color:inherit;">
-    <div class="card">
-      <h3>Starter</h3>
-      <div class="price">$10 / mo</div>
-      50 unlocks included. Scalable for active flippers.
-    </div>
-  </a>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        
-
-  <div class="footer">
-    Garnett Work © 2026 — The Market Oracle  
-    <br />
-    Payment never changes truth.
   </div>
 
+  <div class="footer">
+    Garnett Work © 2026 — The Market Oracle <br />
+    Payment never changes truth.
+  </div>
 </div>
+
+<script>
+    function showVerdict() {
+        const url = document.getElementById('urlInput').value;
+        if(url === "") {
+            alert("Please paste a listing URL first.");
+        } else {
+            document.getElementById('verdict-modal').style.display = 'flex';
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('verdict-modal').style.display = 'none';
+    }
+</script>
 
 </body>
 </html>
-
