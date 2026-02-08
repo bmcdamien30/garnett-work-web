@@ -3,33 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Garnett Work | Verify with Truth</title>
+    <title>Garnett Work | Verify with Confidence</title>
     <style>
-        :root { --gold: #D4AF37; --black: #0A0A0A; --white: #F5F5F5; }
-        body { background: var(--black); color: var(--white); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; text-align: center; margin: 0; padding: 0; }
-        .hero { padding: 100px 20px; }
-        .slogan { color: var(--gold); letter-spacing: 3px; font-weight: bold; text-transform: uppercase; margin-bottom: 15px; font-size: 14px; }
-        h1 { font-size: 3rem; margin: 0; line-height: 1.1; font-weight: 800; }
-        .gold-text { color: var(--gold); }
-        .search-box { background: #161616; border: 1px solid #333; padding: 40px; border-radius: 16px; max-width: 500px; margin: 50px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input { width: 100%; box-sizing: border-box; padding: 15px; margin: 12px 0; background: #000; border: 1px solid #444; color: white; border-radius: 8px; font-size: 16px; }
-        button { background: var(--gold); color: black; font-weight: 800; padding: 18px; border: none; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 15px; font-size: 18px; text-transform: uppercase; transition: transform 0.2s; }
-        button:hover { transform: scale(1.02); background: #f1c40f; }
-        .footer-text { font-size: 0.9rem; color: #666; margin-top: 25px; font-style: italic; letter-spacing: 1px; }
+        :root { --gold: #D4AF37; --black: #0A0A0A; --white: #F5F5F5; --card-bg: #161616; }
+        body { background: var(--black); color: var(--white); font-family: -apple-system, sans-serif; margin: 0; padding: 0; line-height: 1.6; }
+        
+        /* Nav & Logo Area */
+        nav { padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; }
+        .logo-img { height: 50px; } /* This will use your lion file later */
+        .pricing-btn { border: 1px solid var(--gold); color: var(--gold); padding: 8px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+
+        /* Main Hero Section */
+        .hero { display: flex; flex-wrap: wrap; padding: 60px 5%; gap: 40px; align-items: flex-start; }
+        .hero-left { flex: 1; min-width: 300px; }
+        .hero-right { flex: 1; min-width: 350px; background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid #333; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+
+        .slogan-badge { background: rgba(212, 175, 55, 0.1); color: var(--gold); padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 20px; }
+        h1 { font-size: 3.5rem; margin: 0; line-height: 1.1; }
+        .desc { color: #999; font-size: 1.1rem; margin: 25px 0; max-width: 500px; }
+
+        /* Input Styles */
+        label { display: block; color: var(--gold); font-size: 10px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 12px; background: #000; border: 1px solid #444; color: white; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; }
+        .btn-gold { background: var(--gold); color: black; width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+
+        /* Pricing Grid */
+        .pricing-grid { display: flex; gap: 20px; padding: 40px 5%; flex-wrap: wrap; }
+        .price-card { flex: 1; background: var(--card-bg); padding: 25px; border-radius: 12px; border: 1px solid #222; min-width: 250px; }
+        .price-card h3 { color: var(--gold); margin-top: 0; }
+        .price-card .cost { font-size: 24px; font-weight: bold; margin: 10px 0; }
     </style>
 </head>
 <body>
-    <div class="hero">
-        <p class="slogan">Hype Sells. Truth Pays.</p>
-        <h1>Stop losing money to the <br><span class="gold-text">math you didn't see.</span></h1>
-        <p style="color: #888; margin-top: 20px; font-size: 1.2rem;">Hype sees price. <strong>Garnett sees profit.</strong></p>
 
-        <div class="search-box">
-            <input type="text" id="listingUrl" placeholder="Paste eBay, FB, or Listing URL">
-            <input type="number" id="offerPrice" placeholder="Your Offer Price ($)">
-            <button onclick="alert('Analyzing the Truth...')">VERIFY WITH GARNETT</button>
-            <p class="footer-text">Strategy over guesswork. Truth over hype.</p>
+    <nav>
+        <div class="logo-area">
+            <span style="color:var(--gold); font-weight:bold; font-size:24px;">GarnettWork</span>
         </div>
+        <a href="#pricing" class="pricing-btn">Pricing</a>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-left">
+            <div class="slogan-badge">Hype Sells. Truth Pays.</div>
+            <h1>Verify with <br><span style="color:var(--gold)">Confidence.</span></h1>
+            <p class="desc">Garnett Work helps you stop guessing. Paste a listing link and your buy price to get a free Pass/Fail teaser. Unlock the Truth Packet when it matters.</p>
+            
+            <div style="display:flex; gap:15px;">
+                <button class="btn-gold" style="width:auto; padding: 12px 25px;">Run Free Teaser</button>
+                <button style="background:transparent; color:white; border:1px solid #444; padding:12px 25px; border-radius:8px;">How it works</button>
+            </div>
+        </div>
+
+        <div class="hero-right">
+            <h2 style="margin-top:0;">Run Garnett</h2>
+            <p style="color:#777; font-size:12px;">Paste a listing URL + deal details to get a free teaser verdict.</p>
+            
+            <label>Listing URL</label>
+            <input type="text" placeholder="https://...">
+
+            <div style="display:flex; gap:10px;">
+                <div style="flex:2;">
+                    <label>Buy Price</label>
+                    <input type="number" placeholder="$">
+                </div>
+                <div style="flex:2;">
+                    <label>Condition</label>
+                    <select>
+                        <option>Used</option>
+                        <option>New</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn-gold">Get Teaser Verdict (Free)</button>
+        </div>
+    </section>
+
+    <div style="padding: 0 5%;">
+        <h2>Pricing</h2>
+        <p style="color:#666;">Keep it low, gain customers first. Teaser is free. Unlock only when it matters.</p>
     </div>
+
+    <section class="pricing-grid" id="pricing">
+        <div class="price-card">
+            <h3>Free Teaser</h3>
+            <div class="cost">FREE</div>
+            <p style="color:#888; font-size:14px;">Unlimited basic verdicts + headline numbers.</p>
+        </div>
+        <div class="price-card">
+            <h3>Single Unlock</h3>
+            <div class="cost">$0.25</div>
+            <p style="color:#888; font-size:14px;">Unlock one full Truth Packet (comps, math, rules fired, receipt).</p>
+        </div>
+        <div class="price-card" style="border: 1px solid var(--gold);">
+            <h3>Starter</h3>
+            <div class="cost">$10/mo</div>
+            <p style="color:#888; font-size:14px;">50 unlocks included. $0.20 each extra. Saved history.</p>
+        </div>
+    </section>
+
+    <footer style="padding: 40px 5%; border-top: 1px solid #222; display:flex; justify-content:space-between; color:#444; font-size:12px;">
+        <div>© 2026 Garnett Work</div>
+        <div>Truth decides. Payment only unlocks detail.</div>
+    </footer>
+
 </body>
 </html>
