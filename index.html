@@ -191,6 +191,59 @@ input, select {
 
     function closeModal() { document.getElementById('verdict-modal').style.display = 'none'; }
 </script>
+<script>
+    // This function hides shipping if it's a local cash deal
+    function toggleShipping() {
+        const p = document.getElementById('platform').value;
+        document.getElementById('shipping-row').style.display = (p === 'fb_local') ? 'none' : 'block';
+    }
 
+    function runTruthMath() {
+        const buy = parseFloat(document.getElementById('buyPrice').value) || 0;
+        const sell = parseFloat(document.getElementById('marketValue').value) || 0;
+        const ship = parseFloat(document.getElementById('shippingCost').value) || 0;
+        const platform = document.getElementById('platform').value;
+
+        const modal = document.getElementById('verdict-modal');
+        const title = document.getElementById('v-title');
+        const desc = document.getElementById('v-desc');
+        const signal = document.getElementById('v-signal');
+
+        // 1. THE "SCANNING" PHASE (Building Trust)
+        title.innerHTML = "SCANNING MARKET...";
+        title.style.color = "var(--gold)";
+        desc.innerHTML = "Oracle is fetching recent sold comps and calculating platform tax...";
+        signal.innerHTML = "Signal: CALIBRATING";
+        modal.style.display = 'flex';
+
+        // 2. THE REVEAL (The "Truth" happens after 1.5s delay)
+        setTimeout(() => {
+            // Precise fee logic: 13.5% for eBay, 10% for FB Shipped
+            let feePercent = (platform === 'ebay') ? 0.135 : (platform === 'fb_shipped' ? 0.10 : 0);
+            let fees = (platform === 'fb_shipped') ? (sell + ship) * feePercent : (sell * feePercent);
+            if (platform === 'ebay') fees += 0.30; // Flat fee for eBay transactions
+            
+            let actualShip = (platform === 'fb_local') ? 0 : ship;
+            let profit = sell - fees - actualShip - buy;
+            let margin = (profit / sell) * 100;
+
+            // Verdict logic: PASS requires profit and at least 15% margin
+            const isPass = profit > 0 && margin >= 15;
+
+            title.innerHTML = isPass ? "VERDICT: PASS" : "VERDICT: FAIL";
+            title.style.color = isPass ? "var(--gold)" : "var(--red)";
+            
+            desc.innerHTML = `Market Truth: After <b>$${fees.toFixed(2)}</b> in fees and shipping, your net profit is <b>$${profit.toFixed(2)}</b>.`;
+            signal.innerHTML = isPass ? "Signal Strength: HIGH" : "Signal Strength: WEAK";
+            
+            // Visual feedback: Glow the modal border based on the result
+            document.querySelector('.modal-content').style.borderColor = isPass ? "var(--gold)" : "var(--red)";
+        }, 1500);
+    }
+
+    function closeModal() {
+        document.getElementById('verdict-modal').style.display = 'none';
+    }
+</script>
 </body>
 </html>
