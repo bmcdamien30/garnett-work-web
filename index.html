@@ -3,73 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Garnett Work - Deal Analyzer</title>
+    <title>Garnett Work | Verify with Truth</title>
     <style>
-        body { font-family: -apple-system, sans-serif; background: #121212; color: white; padding: 40px; text-align: center; }
-        .container { max-width: 400px; margin: auto; background: #1e1e1e; padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .input-group { margin-bottom: 20px; text-align: left; }
-        label { display: block; margin-bottom: 8px; font-size: 14px; color: #aaa; }
-        input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #333; background: #252525; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        #result { margin-top: 20px; padding: 20px; border-radius: 12px; display: none; }
-        .pass { background: #064e3b; color: #34d399; border: 1px solid #059669; }
-        .fail { background: #7f1d1d; color: #f87171; border: 1px solid #dc2626; }
-        .divider { margin: 25px 0; border-top: 1px solid #333; position: relative; }
-        .divider span { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #1e1e1e; padding: 0 10px; color: #666; font-size: 12px; }
+        :root { --gold: #D4AF37; --black: #0A0A0A; --white: #F5F5F5; }
+        body { background: var(--black); color: var(--white); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; text-align: center; margin: 0; padding: 0; }
+        .hero { padding: 100px 20px; }
+        .slogan { color: var(--gold); letter-spacing: 3px; font-weight: bold; text-transform: uppercase; margin-bottom: 15px; font-size: 14px; }
+        h1 { font-size: 3rem; margin: 0; line-height: 1.1; font-weight: 800; }
+        .gold-text { color: var(--gold); }
+        .search-box { background: #161616; border: 1px solid #333; padding: 40px; border-radius: 16px; max-width: 500px; margin: 50px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input { width: 100%; box-sizing: border-box; padding: 15px; margin: 12px 0; background: #000; border: 1px solid #444; color: white; border-radius: 8px; font-size: 16px; }
+        button { background: var(--gold); color: black; font-weight: 800; padding: 18px; border: none; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 15px; font-size: 18px; text-transform: uppercase; transition: transform 0.2s; }
+        button:hover { transform: scale(1.02); background: #f1c40f; }
+        .footer-text { font-size: 0.9rem; color: #666; margin-top: 25px; font-style: italic; letter-spacing: 1px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Garnett Work</h2>
-        <div class="input-group">
-            <label>Paste Facebook Marketplace Link</label>
-            <input type="text" id="fb-url" placeholder="Paste link here...">
-            <button onclick="analyzeLink()">Analyze Deal</button>
-        </div>
-        <div class="divider"><span>OR</span></div>
-        <div class="input-group">
-            <label>Your Offer Price ($)</label>
-            <input type="number" id="user-price" placeholder="e.g. 500">
-            <button onclick="getVerdict()" style="background: #444;">Manual Calculate</button>
-        </div>
-        <div id="result">
-            <h3 id="verdict-text" style="margin:0;"></h3>
-            <p id="margin-text" style="margin:10px 0 0 0;"></p>
+    <div class="hero">
+        <p class="slogan">Hype Sells. Truth Pays.</p>
+        <h1>Stop losing money to the <br><span class="gold-text">math you didn't see.</span></h1>
+        <p style="color: #888; margin-top: 20px; font-size: 1.2rem;">Hype sees price. <strong>Garnett sees profit.</strong></p>
+
+        <div class="search-box">
+            <input type="text" id="listingUrl" placeholder="Paste eBay, FB, or Listing URL">
+            <input type="number" id="offerPrice" placeholder="Your Offer Price ($)">
+            <button onclick="alert('Analyzing the Truth...')">VERIFY WITH GARNETT</button>
+            <p class="footer-text">Strategy over guesswork. Truth over hype.</p>
         </div>
     </div>
-    <script>
-        const marketValue = 910;
-        function getVerdict() {
-            const price = document.getElementById('user-price').value;
-            if (!price) return;
-            const margin = ((marketValue - price) / marketValue) * 100;
-            const res = document.getElementById('result');
-            res.style.display = 'block';
-            if (margin >= 10) {
-                res.className = 'pass';
-                document.getElementById('verdict-text').innerText = "PASS";
-            } else {
-                res.className = 'fail';
-                document.getElementById('verdict-text').innerText = "FAIL";
-            }
-            document.getElementById('margin-text').innerText = "Margin: " + margin.toFixed(1) + "%";
-        }
-        function analyzeLink() {
-            const url = document.getElementById('fb-url').value;
-            if (!url.includes('facebook.com')) {
-                alert("Please paste a valid Facebook link.");
-                return;
-            }
-            alert("Analyzing Link... (Step 1: Connection Success)");
-        }
-        window.onload = function() {
-            const params = new URLSearchParams(window.location.search);
-            const price = params.get('price');
-            if (price) {
-                document.getElementById('user-price').value = price;
-                getVerdict();
-            }
-        };
-    </script>
 </body>
 </html>
