@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Garnett Work — The Market Oracle</title>
 
 <style>
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: radial-gradient(circle at top left, #1a1a1a, #000000 60%);
+  background: radial-gradient(circle at top, #1a1a1a 0%, #000000 60%);
   color: white;
 }
 
@@ -20,103 +20,114 @@ body {
 }
 
 .hero {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
+  text-align: center;
 }
 
-.left {
-  max-width: 520px;
+.logo {
+  width: 260px;
+  margin: 0 auto 30px auto;
+  display: block;
 }
 
 h1 {
   font-size: 48px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
-p {
-  color: #ccc;
+.sub {
   font-size: 18px;
-}
-
-.gold {
-  background: linear-gradient(90deg, #d4af37, #ffdd66);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #cfcfcf;
+  margin-bottom: 40px;
 }
 
 .form-card {
-  background: rgba(255,255,255,0.05);
+  background: #111;
   padding: 30px;
-  border-radius: 14px;
-  width: 360px;
-  box-shadow: 0 0 40px rgba(212,175,55,0.15);
+  border-radius: 16px;
+  max-width: 400px;
+  margin: 0 auto 60px auto;
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.1);
 }
 
 input, select {
   width: 100%;
   padding: 14px;
-  margin-bottom: 14px;
+  margin-bottom: 15px;
   border-radius: 8px;
-  border: none;
-  background: #111;
+  border: 1px solid #333;
+  background: #1a1a1a;
   color: white;
-  font-size: 16px;
 }
 
-button {
+.gold-btn {
   width: 100%;
-  padding: 16px;
-  border-radius: 8px;
+  padding: 14px;
   border: none;
+  border-radius: 8px;
   font-weight: bold;
-  font-size: 16px;
-  background: linear-gradient(90deg, #d4af37, #ffdd66);
+  background: linear-gradient(90deg, #caa74e, #ffd700);
+  color: black;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease-in-out;
 }
 
-button:hover {
-  box-shadow: 0 0 18px rgba(255,215,0,0.7);
+.gold-btn:hover {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+  transform: scale(1.03);
 }
 
-button:active {
+.gold-btn:active {
   transform: scale(0.97);
-  box-shadow: 0 0 28px rgba(255,215,0,1);
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.9);
 }
 
 .pricing {
-  margin-top: 80px;
+  text-align: center;
 }
 
 .pricing h2 {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
-.pricing-grid {
+.cards {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
+  margin-top: 30px;
 }
 
 .card {
-  background: rgba(255,255,255,0.04);
-  padding: 24px;
-  border-radius: 12px;
-  flex: 1;
-  min-width: 240px;
+  background: #111;
+  padding: 30px;
+  border-radius: 14px;
+  width: 260px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #222;
+}
+
+.card:hover {
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+  transform: translateY(-5px);
+  border-color: #ffd700;
 }
 
 .card h3 {
   margin-bottom: 10px;
 }
 
+.price {
+  font-size: 24px;
+  color: #ffd700;
+  margin-bottom: 10px;
+}
+
 .footer {
-  margin-top: 60px;
-  font-size: 14px;
-  color: #777;
+  margin-top: 80px;
   text-align: center;
+  color: #777;
+  font-size: 14px;
 }
 </style>
 </head>
@@ -125,71 +136,66 @@ button:active {
 
 <div class="container">
 
-<div class="hero">
+  <div class="hero">
 
-<div class="left">
-<h1>Verify With Confidence.</h1>
-<p>
-Garnett Work analyzes <span class="gold">Facebook Marketplace</span> and <span class="gold">eBay listings</span> using real market data.
-Get a fast PASS/FAIL teaser. Unlock the full Truth Packet when precision matters.
-</p>
-</div>
+    <img src="logo.png" class="logo" alt="Garnett Work Logo" />
 
-<div class="form-card">
-<h3>Run Garnett</h3>
+    <h1>Verify With Confidence.</h1>
+    <div class="sub">
+      Garnett Work analyzes <span style="color:#ffd700;">Facebook Marketplace</span> and 
+      <span style="color:#ffd700;">eBay listings</span> using real market data.  
+      Get a fast PASS/FAIL teaser. Unlock the full Truth Packet when precision matters.
+    </div>
 
-<input type="text" placeholder="Paste Facebook or eBay listing URL">
+    <div class="form-card">
+      <input type="text" placeholder="Paste Facebook or eBay listing URL" />
+      <input type="number" placeholder="Buy Price ($)" />
+      <select>
+        <option>Used</option>
+        <option>New</option>
+      </select>
+      <button class="gold-btn">Get Teaser Verdict (Free)</button>
+    </div>
 
-<input type="number" placeholder="Buy Price ($)">
+  </div>
 
-<select>
-<option>Used</option>
-<option>New</option>
-<option>Open Box</option>
-</select>
+  <div class="pricing">
+    <h2>Pricing</h2>
+    <div class="sub">
+      Truth is free to preview. Detailed market verification unlocks when needed.
+    </div>
 
-<button>Get Teaser Verdict (Free)</button>
+    <div class="cards">
 
-</div>
-</div>
+      <div class="card">
+        <h3>Free Teaser</h3>
+        <div class="price">FREE</div>
+        Instant PASS/FAIL + headline market number.
+      </div>
 
-<div class="pricing">
-<h2>Pricing</h2>
+      <div class="card">
+        <h3>Single Unlock</h3>
+        <div class="price">$0.25</div>
+        Full Truth Packet: comps, fee math, rules fired, receipt.
+      </div>
 
-<p>
-Truth is free to preview. Detailed market verification is unlocked when needed.
-</p>
+      <div class="card">
+        <h3>Starter</h3>
+        <div class="price">$10 / mo</div>
+        50 unlocks included. Scalable for active flippers.
+      </div>
 
-<div class="pricing-grid">
+    </div>
+  </div>
 
-<div class="card">
-<h3>Free Teaser</h3>
-<p><strong>FREE</strong></p>
-<p>Instant PASS/FAIL + headline market number.</p>
-</div>
-
-<div class="card">
-<h3>Single Unlock</h3>
-<p><strong>$0.25</strong></p>
-<p>Full Truth Packet: comps, fee math, rules fired, and receipt.</p>
-</div>
-
-<div class="card">
-<h3>Starter</h3>
-<p><strong>$10 / mo</strong></p>
-<p>50 unlocks included. Scalable for active flippers.</p>
-</div>
-
-</div>
-</div>
-
-<div class="footer">
-Garnett Work © 2026 — The Market Oracle  
-<br>
-Payment never changes truth.
-</div>
+  <div class="footer">
+    Garnett Work © 2026 — The Market Oracle  
+    <br />
+    Payment never changes truth.
+  </div>
 
 </div>
 
 </body>
 </html>
+
