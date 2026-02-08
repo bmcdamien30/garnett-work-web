@@ -192,7 +192,6 @@ input, select {
     function closeModal() { document.getElementById('verdict-modal').style.display = 'none'; }
 </script>
 <script>
-    // This function hides shipping if it's a local cash deal
     function toggleShipping() {
         const p = document.getElementById('platform').value;
         document.getElementById('shipping-row').style.display = (p === 'fb_local') ? 'none' : 'block';
@@ -203,40 +202,49 @@ input, select {
         const sell = parseFloat(document.getElementById('marketValue').value) || 0;
         const ship = parseFloat(document.getElementById('shippingCost').value) || 0;
         const platform = document.getElementById('platform').value;
+        const condition = document.getElementById('condition').value; // New Condition Brain
 
         const modal = document.getElementById('verdict-modal');
         const title = document.getElementById('v-title');
         const desc = document.getElementById('v-desc');
         const signal = document.getElementById('v-signal');
 
-        // 1. THE "SCANNING" PHASE (Building Trust)
-        title.innerHTML = "SCANNING MARKET...";
+        // 1. START THE SCAN
+        title.innerHTML = "ANAYLZING CONDITION...";
         title.style.color = "var(--gold)";
-        desc.innerHTML = "Oracle is fetching recent sold comps and calculating platform tax...";
-        signal.innerHTML = "Signal: CALIBRATING";
+        desc.innerHTML = `Oracle is verifying ${condition.toUpperCase()} market data...`;
         modal.style.display = 'flex';
 
-        // 2. THE REVEAL (The "Truth" happens after 1.5s delay)
         setTimeout(() => {
-            // Precise fee logic: 13.5% for eBay, 10% for FB Shipped
+            // Fee Logic
             let feePercent = (platform === 'ebay') ? 0.135 : (platform === 'fb_shipped' ? 0.10 : 0);
             let fees = (platform === 'fb_shipped') ? (sell + ship) * feePercent : (sell * feePercent);
-            if (platform === 'ebay') fees += 0.30; // Flat fee for eBay transactions
+            if (platform === 'ebay') fees += 0.30;
             
             let actualShip = (platform === 'fb_local') ? 0 : ship;
             let profit = sell - fees - actualShip - buy;
-            let margin = (profit / sell) * 100;
+            
+            // THE CONDITION LOGIC
+            // We require a higher margin for "New" items because if the buyer opens it and returns it, you lose 50% value.
+            let requiredMargin = 15; 
+            if (condition === 'new') requiredMargin = 25; 
+            if (condition === 'loose') requiredMargin = 10; // High volume, lower margin is okay
 
-            // Verdict logic: PASS requires profit and at least 15% margin
-            const isPass = profit > 0 && margin >= 15;
+            let margin = (profit / sell) * 100;
+            const isPass = profit > 0 && margin >= requiredMargin;
 
             title.innerHTML = isPass ? "VERDICT: PASS" : "VERDICT: FAIL";
             title.style.color = isPass ? "var(--gold)" : "var(--red)";
             
-            desc.innerHTML = `Market Truth: After <b>$${fees.toFixed(2)}</b> in fees and shipping, your net profit is <b>$${profit.toFixed(2)}</b>.`;
+            if (isPass) {
+                desc.innerHTML = `<b>Truth:</b> In ${condition} condition, you clear <b>$${profit.toFixed(2)}</b> net profit after all fees.`;
+            } else {
+                desc.innerHTML = profit < 0 ? 
+                `<b>Truth:</b> You are losing <b>$${Math.abs(profit).toFixed(2)}</b> on this deal.` : 
+                `<b>Truth:</b> Profit is only $${profit.toFixed(2)}. For ${condition} items, the risk is too high.`;
+            }
+
             signal.innerHTML = isPass ? "Signal Strength: HIGH" : "Signal Strength: WEAK";
-            
-            // Visual feedback: Glow the modal border based on the result
             document.querySelector('.modal-content').style.borderColor = isPass ? "var(--gold)" : "var(--red)";
         }, 1500);
     }
