@@ -1,257 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Garnett Work — The Market Oracle</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Garnett Work — Pricing</title>
 
-<style>
-:root {
-  --gold: #FFD700;
-  --gold-glow: rgba(255, 215, 0, 0.4);
-  --card-bg: #111111;
-  --red: #FF4B4B;
+  <style>
+    :root{
+      --bg: #050505;
+      --panel: rgba(15,15,15,0.72);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.68);
+      --gold: rgba(255,215,0,1);
+      --goldSoft: rgba(255,215,0,0.35);
+    }
+
+    *{ box-sizing: border-box; }
+    body{
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top, #141414 0%, #000 55%, #000 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 48px 18px;
+    }
+
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-title{
+      text-align: center;
+      font-size: clamp(28px, 4vw, 44px);
+      margin: 0 0 10px 0;
+      font-weight: 900;
+      letter-spacing: 0.2px;
+    }
+
+    .section-sub{
+      text-align: center;
+      color: var(--muted);
+      margin: 0 0 22px 0;
+      font-size: 16px;
+    }
+
+    .fyi{
+      max-width: 900px;
+      margin: 0 auto 34px auto;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.85);
+      line-height: 1.45;
+      font-size: 14px;
+    }
+    .fyi strong{ color: #fff; }
+    .fyi span{
+      color: rgba(255,215,0,0.92);
+      font-weight: 800;
+    }
+
+    .fyi .dot{
+  color: rgba(255,215,0,0.75);
+  margin: 0 8px;
+  font-weight: 900;
+}
+.fyi .note{
+  color: rgba(255,255,255,0.65);
+  font-weight: 700;
 }
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: radial-gradient(circle at top, #1a1a1a 0%, #000000 70%);
-  color: white;
-  min-height: 100vh;
-}
+    
+    <div class="fyi">
+  <strong>FYI:</strong>
+  <span>Teaser</span> shows the verdict + headline market number.
+  <span>Unlock</span> reveals the Truth Packet (comps, fee math, rules fired, receipt).
+  <strong>Payment never changes the verdict</strong> — it only unlocks the proof.
+  <br><strong>Payments accepted:</strong> Lightning (BTC) <span class="dot">•</span> Card (Stripe)
+  <br><span class="note">FYI:</span> Market data changes fast — verdicts are time-stamped and for informational use.
+</div>
 
-.container { max-width: 1100px; margin: auto; padding: 20px; text-align: center; }
 
-/* LOGO & HERO */
-.logo {
-  width: 940px; 
-  max-width: 100%;
-  margin: 0 auto 10px auto;
-  display: block;
-  filter: drop-shadow(0 0 30px var(--gold-glow));
-}
 
-h1 { font-size: 52px; margin: 0; letter-spacing: -2px; font-weight: 800; }
-.sub-headline { color: #888; font-size: 18px; margin-top: 10px; margin-bottom: 40px; }
 
-/* FORM CARD */
-.form-card {
-  background: var(--card-bg);
-  padding: 30px;
-  border-radius: 20px;
-  max-width: 440px;
-  margin: 0 auto 80px auto;
-  border: 1px solid #222;
-  text-align: left;
-}
 
-label { color: var(--gold); font-size: 11px; font-weight: 900; text-transform: uppercase; display: block; margin-bottom: 6px; }
-input, select {
-  width: 100%; padding: 16px; margin-bottom: 20px; border-radius: 12px;
-  border: 1px solid #333; background: #000; color: white; box-sizing: border-box;
-}
 
-.gold-btn {
-  width: 100%; padding: 20px; border: none; border-radius: 15px; font-weight: 900;
-  background: linear-gradient(180deg, #F5D142 0%, #D4AF37 100%);
-  color: black; cursor: pointer; text-transform: uppercase;
-  box-shadow: 0 0 20px var(--gold-glow); transition: 0.3s;
-}
-.gold-btn:hover { transform: scale(1.02); box-shadow: 0 0 30px var(--gold-glow); }
 
-/* PRICING SECTION - FROM SCREENSHOT */
-.pricing-header { margin-top: 100px; }
-.pricing-header h2 { font-size: 32px; margin-bottom: 10px; }
-.pricing-header p { color: #888; margin-bottom: 40px; }
 
-.pricing-grid {
-  display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 100px;
-}
+    .grid{
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
 
-.price-card {
-  background: #0D0D0D; padding: 40px 20px; border-radius: 20px;
-  border: 1px solid #222; width: 280px; transition: 0.3s;
-}
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+    }
 
-.price-card h3 { font-size: 18px; margin: 0; }
-.price-card .amount { 
-    font-size: 36px; font-weight: 900; color: var(--gold); 
-    margin: 15px 0; text-shadow: 0 0 15px var(--gold-glow); 
-}
-.price-card p { color: #888; font-size: 14px; line-height: 1.5; margin: 0; }
+    /* ===== Pricing Card Glow ===== */
+    .pricing-card{
+      position: relative;
+      border-radius: 20px;
+      padding: 26px;
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+      overflow: hidden;
+    }
 
-/* MODAL */
-#verdict-modal {
-  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.9); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(8px);
-}
+    /* subtle top sheen */
+    .pricing-card::before{
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 10%, rgba(255,215,0,0.08), transparent 45%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
 
-.modal-content {
-  background: #0D0D0D; padding: 50px 30px; border-radius: 40px;
-  border: 2px solid var(--gold); text-align: center; max-width: 450px; width: 90%;
-}
+    .pricing-card:hover{
+      transform: translateY(-4px);
+      border-color: rgba(255,215,0,0.32);
+      box-shadow:
+        0 16px 40px rgba(0,0,0,0.55),
+        0 0 26px rgba(255,215,0,0.14);
+    }
 
-.modal-content h2 { font-size: 42px; font-weight: 900; margin: 0 0 20px 0; text-transform: uppercase; color: var(--gold); }
-.signal-pill { background: #1A1A1A; padding: 20px; border-radius: 18px; margin: 20px 0; font-weight: 800; color: var(--gold); border: 1px solid #222; }
+    .pricing-card:active{
+      transform: translateY(-2px) scale(0.995);
+      border-color: rgba(255,215,0,0.55);
+      box-shadow:
+        0 18px 46px rgba(0,0,0,0.62),
+        0 0 34px rgba(255,215,0,0.22);
+    }
 
-/* FOOTER */
-.footer { padding: 60px 0; border-top: 1px solid #111; color: #555; font-size: 13px; line-height: 1.6; }
-</style>
+    .pricing-card:focus-within{
+      border-color: rgba(255,215,0,0.65);
+      box-shadow:
+        0 0 0 3px rgba(255,215,0,0.16),
+        0 18px 46px rgba(0,0,0,0.58),
+        0 0 34px rgba(255,215,0,0.18);
+    }
+
+    .plan{
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      gap: 12px;
+    }
+
+    .plan h3{
+      margin: 0;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 0.2px;
+    }
+
+    .price{
+      font-size: 44px;
+      font-weight: 950;
+      margin: 6px 0 2px 0;
+      color: rgba(255,215,0,0.95);
+      letter-spacing: 0.2px;
+    }
+
+    .desc{
+      margin: 0;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.45;
+      font-size: 15px;
+    }
+
+    .micro{
+      margin: 0;
+      color: rgba(255,255,255,0.55);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .spacer{ flex: 1; }
+
+    /* ===== Glowing CTA buttons (hover + press) ===== */
+    .glow-btn{
+      width: 100%;
+      margin-top: 10px;
+      appearance: none;
+      border: 1px solid rgba(255, 215, 0, 0.35);
+      background: linear-gradient(180deg, rgba(255,215,0,0.95), rgba(255,215,0,0.78));
+      color: #0b0b0b;
+      font-weight: 950;
+      letter-spacing: 0.35px;
+      border-radius: 14px;
+      padding: 14px 18px;
+      cursor: pointer;
+
+      transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease, border-color 140ms ease;
+      box-shadow:
+        0 10px 26px rgba(0,0,0,0.45),
+        0 0 0 rgba(255,215,0,0);
+    }
+
+    .glow-btn:hover{
+      transform: translateY(-2px);
+      border-color: rgba(255, 215, 0, 0.70);
+      filter: brightness(1.05);
+      box-shadow:
+        0 14px 34px rgba(0,0,0,0.55),
+        0 0 26px rgba(255,215,0,0.38),
+        0 0 60px rgba(255,215,0,0.18);
+    }
+
+    .glow-btn:active{
+      transform: translateY(0px) scale(0.985);
+      border-color: rgba(255, 215, 0, 0.90);
+      filter: brightness(0.98);
+      box-shadow:
+        0 10px 24px rgba(0,0,0,0.60),
+        0 0 34px rgba(255,215,0,0.50),
+        0 0 80px rgba(255,215,0,0.22);
+    }
+
+    .glow-btn:focus-visible{
+      outline: none;
+      border-color: rgba(255, 215, 0, 0.95);
+      box-shadow:
+        0 0 0 4px rgba(255,215,0,0.22),
+        0 0 28px rgba(255,215,0,0.35),
+        0 18px 40px rgba(0,0,0,0.55);
+    }
+
+    .glow-btn:disabled{
+      opacity: 0.55;
+      cursor: not-allowed;
+      filter: grayscale(0.2);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+    }
+
+    /* ===== Magic: when card is hovered/pressed, button glows too ===== */
+    .pricing-card:hover .glow-btn{
+      border-color: rgba(255,215,0,0.75);
+      box-shadow:
+        0 14px 34px rgba(0,0,0,0.55),
+        0 0 28px rgba(255,215,0,0.42),
+        0 0 70px rgba(255,215,0,0.20);
+    }
+
+    .pricing-card:active .glow-btn{
+      border-color: rgba(255,215,0,0.95);
+      box-shadow:
+        0 10px 24px rgba(0,0,0,0.62),
+        0 0 36px rgba(255,215,0,0.55),
+        0 0 92px rgba(255,215,0,0.24);
+    }
+
+    /* Optional: little "best value" badge */
+    .badge{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,215,0,0.10);
+      border: 1px solid rgba(255,215,0,0.28);
+      color: rgba(255,215,0,0.95);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.35px;
+      width: fit-content;
+    }
+  </style>
 </head>
 
 <body>
+  <div class="wrap">
+    <h1 class="section-title">Pricing</h1>
+    <p class="section-sub">Preview the signal. Unlock the proof.</p>
 
-<div id="verdict-modal">
-    <div class="modal-content">
-        <h2 id="v-title">VERDICT: PASS</h2>
-        <p id="v-desc"></p>
-        <div class="signal-pill" id="v-signal">Signal Strength: High</div>
-        <button class="gold-btn" onclick="closeModal()" style="border-radius:18px;">Close Verdict</button>
+    <div class="fyi">
+      <strong>FYI:</strong>
+      <span>Teaser</span> shows the verdict + headline market number.
+      <span>Unlock</span> reveals the Truth Packet (comps, fee math, rules fired, receipt).
+      <strong>Payment never changes the verdict</strong> — it only unlocks the proof.
+      Results are time-stamped and depend on listing details + market changes.
     </div>
-</div>
 
-<div class="container">
-    <img src="logo.png" class="logo" alt="Garnett Work">
-    <h1>Verify with Confidence.</h1>
-    <p class="sub-headline">Stop guessing. We calculate the hidden fees and shipping so you see the real profit.</p>
-
-    <div class="form-card">
-      <label>Platform</label>
-      <select id="platform" onchange="toggleShipping()">
-        <option value="ebay">eBay (13.5% Fee)</option>
-        <option value="fb_shipped">FB Marketplace (10% Fee)</option>
-        <option value="fb_local">FB Marketplace (Local Cash)</option>
-      </select>
-
-      <label>Listing URL</label>
-      <input type="text" id="urlInput" placeholder="Paste link here...">
-      
-      <div style="display:flex; gap:12px;">
-        <div style="flex:1;"><label>Buy Price ($)</label><input type="number" id="buyPrice" placeholder="0"></div>
-        <div style="flex:1;"><label>Est. Sale ($)</label><input type="number" id="marketValue" placeholder="0"></div>
+    <div class="grid">
+      <!-- Free Teaser -->
+      <div class="pricing-card" tabindex="0" role="button" aria-label="Free Teaser plan">
+        <div class="plan">
+          <h3>Free Teaser</h3>
+          <div class="price">FREE</div>
+          <p class="desc">Instant PASS/FAIL + headline market number.</p>
+          <p class="micro">Perfect for quick scans.</p>
+          <div class="spacer"></div>
+          <button class="glow-btn" type="button">GET FREE TEASER</button>
+        </div>
       </div>
 
-      <div id="shipping-row"><label>Estimated Shipping Cost ($)</label><input type="number" id="shippingCost" value="12"></div>
-      
-      <button class="gold-btn" onclick="runTruthMath()">Get Teaser Verdict (Free)</button>
-    </div>
-
-    <div class="pricing-header">
-        <h2>Pricing</h2>
-        <p>Preview the signal. Unlock the proof.</p>
-    </div>
-
-    <div class="pricing-grid">
-        <div class="price-card">
-            <h3>Free Teaser</h3>
-            <div class="amount">FREE</div>
-            <p>Instant PASS/FAIL + headline market number.</p>
+      <!-- Single Unlock -->
+      <div class="pricing-card" tabindex="0" role="button" aria-label="Single Unlock plan">
+        <div class="plan">
+          <h3>Single Unlock</h3>
+          <div class="price">$0.25</div>
+          <p class="desc">Unlock the Truth Packet: comps, fee math, rules fired, receipt.</p>
+          <p class="micro">Best for one-off checks.</p>
+          <div class="spacer"></div>
+          <button class="glow-btn" type="button">UNLOCK PROOF ($0.25)</button>
         </div>
-        <div class="price-card">
-            <h3>Single Unlock</h3>
-            <div class="amount">$0.25</div>
-            <p>Full Truth Packet: comps, fee math, rules fired, receipt.</p>
+      </div>
+
+      <!-- Starter -->
+      <div class="pricing-card" tabindex="0" role="button" aria-label="Starter plan">
+        <div class="plan">
+          <div class="badge">BEST VALUE</div>
+          <h3>Starter</h3>
+          <div class="price">$10 / mo</div>
+          <p class="desc">50 unlocks included. Built for active flippers.</p>
+          <p class="micro">Lower cost per verdict.</p>
+          <div class="spacer"></div>
+          <button class="glow-btn" type="button">STARTER — $10 / MO</button>
         </div>
-        <div class="price-card">
-            <h3>Starter</h3>
-            <div class="amount">$10 / mo</div>
-            <p>50 unlocks included. Scalable for active flippers.</p>
-        </div>
+      </div>
     </div>
+  </div>
 
-    <div class="footer">
-        Garnett Work © 2026 — The Market Oracle<br>
-        Payment never changes truth.
-    </div>
-</div>
+  <script>
+    // Make the whole card clickable: tapping the card triggers its button
+    document.querySelectorAll('.pricing-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('button, a, input, select, textarea')) return;
+        card.querySelector('button')?.click();
+      });
 
-<script>
-    function toggleShipping() {
-        const p = document.getElementById('platform').value;
-        document.getElementById('shipping-row').style.display = (p === 'fb_local') ? 'none' : 'block';
-    }
+      // Enter/Space for keyboard users
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          card.querySelector('button')?.click();
+        }
+      });
+    });
 
-    function runTruthMath() {
-        const buy = parseFloat(document.getElementById('buyPrice').value) || 0;
-        const sell = parseFloat(document.getElementById('marketValue').value) || 0;
-        const ship = parseFloat(document.getElementById('shippingCost').value) || 0;
-        const platform = document.getElementById('platform').value;
-
-        let fees = (platform === 'ebay') ? (sell * 0.135 + 0.3) : (platform === 'fb_shipped' ? (sell + ship) * 0.1 : 0);
-        let profit = sell - fees - (platform === 'fb_local' ? 0 : ship) - buy;
-        
-        document.getElementById('v-desc').innerHTML = `After <b>$${fees.toFixed(2)}</b> in fees and shipping, your net profit is <b>$${profit.toFixed(2)}</b>.`;
-        document.getElementById('v-title').innerHTML = profit > 0 ? "VERDICT: PASS" : "VERDICT: FAIL";
-        document.getElementById('v-title').style.color = profit > 0 ? "var(--gold)" : "var(--red)";
-        document.getElementById('v-signal').innerHTML = profit > 0 ? "Signal Strength: High" : "Signal Strength: Weak";
-        
-        document.getElementById('verdict-modal').style.display = 'flex';
-    }
-
-    function closeModal() { document.getElementById('verdict-modal').style.display = 'none'; }
-</script>
-<script>
-    function toggleShipping() {
-        const p = document.getElementById('platform').value;
-        document.getElementById('shipping-row').style.display = (p === 'fb_local') ? 'none' : 'block';
-    }
-
-    function runTruthMath() {
-        const buy = parseFloat(document.getElementById('buyPrice').value) || 0;
-        const sell = parseFloat(document.getElementById('marketValue').value) || 0;
-        const ship = parseFloat(document.getElementById('shippingCost').value) || 0;
-        const platform = document.getElementById('platform').value;
-        const condition = document.getElementById('condition').value; // New Condition Brain
-
-        const modal = document.getElementById('verdict-modal');
-        const title = document.getElementById('v-title');
-        const desc = document.getElementById('v-desc');
-        const signal = document.getElementById('v-signal');
-
-        // 1. START THE SCAN
-        title.innerHTML = "ANAYLZING CONDITION...";
-        title.style.color = "var(--gold)";
-        desc.innerHTML = `Oracle is verifying ${condition.toUpperCase()} market data...`;
-        modal.style.display = 'flex';
-
-        setTimeout(() => {
-            // Fee Logic
-            let feePercent = (platform === 'ebay') ? 0.135 : (platform === 'fb_shipped' ? 0.10 : 0);
-            let fees = (platform === 'fb_shipped') ? (sell + ship) * feePercent : (sell * feePercent);
-            if (platform === 'ebay') fees += 0.30;
-            
-            let actualShip = (platform === 'fb_local') ? 0 : ship;
-            let profit = sell - fees - actualShip - buy;
-            
-            // THE CONDITION LOGIC
-            // We require a higher margin for "New" items because if the buyer opens it and returns it, you lose 50% value.
-            let requiredMargin = 15; 
-            if (condition === 'new') requiredMargin = 25; 
-            if (condition === 'loose') requiredMargin = 10; // High volume, lower margin is okay
-
-            let margin = (profit / sell) * 100;
-            const isPass = profit > 0 && margin >= requiredMargin;
-
-            title.innerHTML = isPass ? "VERDICT: PASS" : "VERDICT: FAIL";
-            title.style.color = isPass ? "var(--gold)" : "var(--red)";
-            
-            if (isPass) {
-                desc.innerHTML = `<b>Truth:</b> In ${condition} condition, you clear <b>$${profit.toFixed(2)}</b> net profit after all fees.`;
-            } else {
-                desc.innerHTML = profit < 0 ? 
-                `<b>Truth:</b> You are losing <b>$${Math.abs(profit).toFixed(2)}</b> on this deal.` : 
-                `<b>Truth:</b> Profit is only $${profit.toFixed(2)}. For ${condition} items, the risk is too high.`;
-            }
-
-            signal.innerHTML = isPass ? "Signal Strength: HIGH" : "Signal Strength: WEAK";
-            document.querySelector('.modal-content').style.borderColor = isPass ? "var(--gold)" : "var(--red)";
-        }, 1500);
-    }
-
-    function closeModal() {
-        document.getElementById('verdict-modal').style.display = 'none';
-    }
-</script>
+    // Demo clicks (replace with your real actions)
+    document.querySelectorAll('.glow-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        alert(`Clicked: ${btn.textContent}`);
+      });
+    });
+  </script>
 </body>
 </html>
