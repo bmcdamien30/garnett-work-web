@@ -3,356 +3,496 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Garnett Work — Pricing</title>
+  <title>Garnett Work — Verify with Confidence</title>
 
   <style>
     :root{
-      --bg: #050505;
-      --panel: rgba(15,15,15,0.72);
-      --text: #ffffff;
-      --muted: rgba(255,255,255,0.68);
-      --gold: rgba(255,215,0,1);
-      --goldSoft: rgba(255,215,0,0.35);
+      --bg0:#000;
+      --bg1:#0b0b0f;
+      --panel: rgba(18,18,22,0.72);
+      --panel2: rgba(18,18,22,0.62);
+      --border: rgba(255,255,255,0.08);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.65);
+      --gold: rgba(255,215,0,0.95);
+      --gold2: rgba(255,215,0,0.78);
+      --shadow: 0 18px 50px rgba(0,0,0,0.6);
     }
 
-    *{ box-sizing: border-box; }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
     body{
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      background: radial-gradient(circle at top, #141414 0%, #000 55%, #000 100%);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 48px 18px;
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 35% 20%, rgba(255,215,0,0.10), transparent 42%),
+        radial-gradient(circle at 75% 35%, rgba(255,215,0,0.06), transparent 40%),
+        radial-gradient(circle at top, #16161a 0%, #050507 55%, #000 100%);
     }
 
-    .wrap{
-      max-width: 1100px;
+    .container{
+      max-width: 1180px;
       margin: 0 auto;
+      padding: 28px 22px 34px;
     }
 
-    .section-title{
-      text-align: center;
-      font-size: clamp(28px, 4vw, 44px);
-      margin: 0 0 10px 0;
-      font-weight: 900;
+    /* Top nav */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255,215,0,0.08);
+      border: 1px solid rgba(255,215,0,0.22);
+      color: rgba(255,255,255,0.88);
+      font-size: 13px;
+      font-weight: 700;
       letter-spacing: 0.2px;
+      user-select:none;
     }
 
-    .section-sub{
-      text-align: center;
-      color: var(--muted);
-      margin: 0 0 22px 0;
-      font-size: 16px;
+    .pill .dot{
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(255,215,0,0.85);
+      box-shadow: 0 0 10px rgba(255,215,0,0.45);
     }
 
-    .fyi{
-      max-width: 900px;
-      margin: 0 auto 34px auto;
-      padding: 14px 16px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: rgba(255,255,255,0.85);
-      line-height: 1.45;
-      font-size: 14px;
-    }
-    .fyi strong{ color: #fff; }
-    .fyi span{
-      color: rgba(255,215,0,0.92);
+    .navbtn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,215,0,0.22);
+      background: rgba(255,215,0,0.06);
+      color: rgba(255,255,255,0.9);
       font-weight: 800;
+      font-size: 13px;
+      cursor:pointer;
+      text-decoration:none;
+      user-select:none;
     }
 
-    .fyi .dot{
-  color: rgba(255,215,0,0.75);
-  margin: 0 8px;
-  font-weight: 900;
-}
-.fyi .note{
-  color: rgba(255,255,255,0.65);
-  font-weight: 700;
-}
-
-    
-    <div class="fyi">
-  <strong>FYI:</strong>
-  <span>Teaser</span> shows the verdict + headline market number.
-  <span>Unlock</span> reveals the Truth Packet (comps, fee math, rules fired, receipt).
-  <strong>Payment never changes the verdict</strong> — it only unlocks the proof.
-  <br><strong>Payments accepted:</strong> Lightning (BTC) <span class="dot">•</span> Card (Stripe)
-  <br><span class="note">FYI:</span> Market data changes fast — verdicts are time-stamped and for informational use.
-</div>
-
-
-
-
-
-
-
-
-    .grid{
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+    /* Hero grid */
+    .hero{
+      display:grid;
+      grid-template-columns: 1.25fr 0.95fr;
       gap: 18px;
-      align-items: stretch;
+      align-items: start;
+      margin-bottom: 18px;
     }
 
     @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
+      .hero{ grid-template-columns: 1fr; }
     }
 
-    /* ===== Pricing Card Glow ===== */
-    .pricing-card{
-      position: relative;
-      border-radius: 20px;
-      padding: 26px;
-      background: var(--panel);
-      border: 1px solid rgba(255,255,255,0.08);
-      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
-      box-shadow: 0 10px 28px rgba(0,0,0,0.45);
-      overflow: hidden;
+    .heroLeft{
+      position:relative;
+      min-height: 320px;
+      padding: 18px 0 0;
     }
 
-    /* subtle top sheen */
-    .pricing-card::before{
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 30% 10%, rgba(255,215,0,0.08), transparent 45%);
-      opacity: 0.9;
-      pointer-events: none;
+    h1{
+      margin: 8px 0 10px;
+      font-size: clamp(36px, 4.2vw, 56px);
+      letter-spacing: -0.6px;
+      line-height: 1.04;
+      font-weight: 950;
     }
 
-    .pricing-card:hover{
-      transform: translateY(-4px);
-      border-color: rgba(255,215,0,0.32);
-      box-shadow:
-        0 16px 40px rgba(0,0,0,0.55),
-        0 0 26px rgba(255,215,0,0.14);
+    .lead{
+      margin: 0 0 14px;
+      max-width: 560px;
+      color: var(--muted);
+      font-size: 15.5px;
+      line-height: 1.5;
     }
 
-    .pricing-card:active{
-      transform: translateY(-2px) scale(0.995);
-      border-color: rgba(255,215,0,0.55);
-      box-shadow:
-        0 18px 46px rgba(0,0,0,0.62),
-        0 0 34px rgba(255,215,0,0.22);
+    .ctaRow{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 14px 0 10px;
     }
 
-    .pricing-card:focus-within{
-      border-color: rgba(255,215,0,0.65);
-      box-shadow:
-        0 0 0 3px rgba(255,215,0,0.16),
-        0 18px 46px rgba(0,0,0,0.58),
-        0 0 34px rgba(255,215,0,0.18);
-    }
-
-    .plan{
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      gap: 12px;
-    }
-
-    .plan h3{
-      margin: 0;
-      font-size: 20px;
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 11px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,215,0,0.35);
       font-weight: 900;
-      letter-spacing: 0.2px;
-    }
-
-    .price{
-      font-size: 44px;
-      font-weight: 950;
-      margin: 6px 0 2px 0;
-      color: rgba(255,215,0,0.95);
-      letter-spacing: 0.2px;
-    }
-
-    .desc{
-      margin: 0;
-      color: rgba(255,255,255,0.75);
-      line-height: 1.45;
-      font-size: 15px;
-    }
-
-    .micro{
-      margin: 0;
-      color: rgba(255,255,255,0.55);
       font-size: 13px;
-      line-height: 1.4;
-    }
-
-    .spacer{ flex: 1; }
-
-    /* ===== Glowing CTA buttons (hover + press) ===== */
-    .glow-btn{
-      width: 100%;
-      margin-top: 10px;
-      appearance: none;
-      border: 1px solid rgba(255, 215, 0, 0.35);
-      background: linear-gradient(180deg, rgba(255,215,0,0.95), rgba(255,215,0,0.78));
-      color: #0b0b0b;
-      font-weight: 950;
-      letter-spacing: 0.35px;
-      border-radius: 14px;
-      padding: 14px 18px;
-      cursor: pointer;
-
+      letter-spacing: 0.2px;
+      cursor:pointer;
+      user-select:none;
+      text-decoration:none;
       transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease, border-color 140ms ease;
-      box-shadow:
-        0 10px 26px rgba(0,0,0,0.45),
-        0 0 0 rgba(255,215,0,0);
     }
 
-    .glow-btn:hover{
+    .btnPrimary{
+      background: linear-gradient(180deg, var(--gold), var(--gold2));
+      color: #0a0a0a;
+    }
+
+    .btnGhost{
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.9);
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    /* Universal glow for ALL buttons + .navbtn */
+    .btn:hover, .navbtn:hover, button:hover{
       transform: translateY(-2px);
-      border-color: rgba(255, 215, 0, 0.70);
       filter: brightness(1.05);
       box-shadow:
         0 14px 34px rgba(0,0,0,0.55),
-        0 0 26px rgba(255,215,0,0.38),
-        0 0 60px rgba(255,215,0,0.18);
+        0 0 26px rgba(255,215,0,0.28),
+        0 0 60px rgba(255,215,0,0.14);
+      border-color: rgba(255,215,0,0.55);
     }
-
-    .glow-btn:active{
+    .btn:active, .navbtn:active, button:active{
       transform: translateY(0px) scale(0.985);
-      border-color: rgba(255, 215, 0, 0.90);
       filter: brightness(0.98);
       box-shadow:
         0 10px 24px rgba(0,0,0,0.60),
-        0 0 34px rgba(255,215,0,0.50),
-        0 0 80px rgba(255,215,0,0.22);
+        0 0 34px rgba(255,215,0,0.40),
+        0 0 80px rgba(255,215,0,0.18);
+      border-color: rgba(255,215,0,0.75);
     }
-
-    .glow-btn:focus-visible{
+    .btn:focus-visible, .navbtn:focus-visible, button:focus-visible{
       outline: none;
-      border-color: rgba(255, 215, 0, 0.95);
       box-shadow:
-        0 0 0 4px rgba(255,215,0,0.22),
-        0 0 28px rgba(255,215,0,0.35),
+        0 0 0 4px rgba(255,215,0,0.18),
+        0 0 28px rgba(255,215,0,0.26),
         0 18px 40px rgba(0,0,0,0.55);
     }
 
-    .glow-btn:disabled{
-      opacity: 0.55;
-      cursor: not-allowed;
-      filter: grayscale(0.2);
-      box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+    .subNote{
+      margin-top: 10px;
+      color: rgba(255,255,255,0.55);
+      font-size: 12.5px;
     }
 
-    /* ===== Magic: when card is hovered/pressed, button glows too ===== */
-    .pricing-card:hover .glow-btn{
-      border-color: rgba(255,215,0,0.75);
-      box-shadow:
-        0 14px 34px rgba(0,0,0,0.55),
-        0 0 28px rgba(255,215,0,0.42),
-        0 0 70px rgba(255,215,0,0.20);
+    /* Logo placement like screenshot */
+    .brandLogo{
+      position:absolute;
+      right: 12px;
+      top: 112px;
+      width: 220px;
+      max-width: 38%;
+      opacity: 0.98;
+      filter: drop-shadow(0 0 22px rgba(255,215,0,0.18));
     }
 
-    .pricing-card:active .glow-btn{
-      border-color: rgba(255,215,0,0.95);
-      box-shadow:
-        0 10px 24px rgba(0,0,0,0.62),
-        0 0 36px rgba(255,215,0,0.55),
-        0 0 92px rgba(255,215,0,0.24);
+    @media (max-width: 980px){
+      .brandLogo{
+        position: relative;
+        right: auto;
+        top: auto;
+        width: 240px;
+        max-width: 70%;
+        margin-top: 14px;
+      }
     }
 
-    /* Optional: little "best value" badge */
-    .badge{
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      background: rgba(255,215,0,0.10);
-      border: 1px solid rgba(255,215,0,0.28);
-      color: rgba(255,215,0,0.95);
-      font-size: 12px;
+    /* Right run card */
+    .runCard{
+      background: rgba(22,22,26,0.72);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .runTitle{
+      font-weight: 950;
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+
+    .runDesc{
+      margin: 0 0 12px;
+      color: rgba(255,255,255,0.65);
+      font-size: 12.5px;
+      line-height: 1.4;
+    }
+
+    label{
+      display:block;
+      font-size: 11px;
       font-weight: 900;
-      letter-spacing: 0.35px;
-      width: fit-content;
+      letter-spacing: 0.8px;
+      color: rgba(255,215,0,0.82);
+      margin: 10px 0 6px;
+    }
+
+    .input, select{
+      width:100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(12,12,16,0.85);
+      color: rgba(255,255,255,0.92);
+      outline: none;
+    }
+
+    .row2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .runBtn{
+      width:100%;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,215,0,0.35);
+      background: linear-gradient(180deg, var(--gold), var(--gold2));
+      color: #0a0a0a;
+      font-weight: 950;
+      letter-spacing: 0.2px;
+      cursor:pointer;
+    }
+
+    /* Mid cards */
+    .midCards{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 16px 0 16px;
+    }
+    @media (max-width: 980px){
+      .midCards{ grid-template-columns: 1fr; }
+    }
+
+    .infoCard{
+      background: rgba(18,18,22,0.58);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+    }
+
+    .infoCard h4{
+      margin: 0 0 6px;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .infoCard p{
+      margin:0;
+      color: rgba(255,255,255,0.65);
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+
+    /* Pricing */
+    .pricingWrap{
+      margin-top: 8px;
+    }
+
+    .pricingTitle{
+      margin: 10px 0 6px;
+      font-size: 18px;
+      font-weight: 950;
+    }
+
+    .pricingSub{
+      margin: 0 0 10px;
+      color: rgba(255,255,255,0.62);
+      font-size: 12.5px;
+    }
+
+    .pricingFYI{
+      margin: 0 0 12px;
+      color: rgba(255,255,255,0.55);
+      font-size: 12px;
+    }
+    .pricingFYI strong{ color: rgba(255,255,255,0.82); }
+    .pricingFYI .gold{ color: rgba(255,215,0,0.9); font-weight: 900; }
+
+    .pricingGrid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 980px){
+      .pricingGrid{ grid-template-columns: 1fr; }
+    }
+
+    .priceCard{
+      background: rgba(18,18,22,0.58);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+      cursor: pointer;
+      user-select:none;
+    }
+
+    .priceCard:hover{
+      transform: translateY(-3px);
+      border-color: rgba(255,215,0,0.28);
+      box-shadow: 0 16px 38px rgba(0,0,0,0.50), 0 0 22px rgba(255,215,0,0.12);
+    }
+
+    .priceCard:active{
+      transform: translateY(-1px) scale(0.995);
+      border-color: rgba(255,215,0,0.48);
+      box-shadow: 0 18px 44px rgba(0,0,0,0.60), 0 0 28px rgba(255,215,0,0.18);
+    }
+
+    .priceCard h5{
+      margin:0 0 8px;
+      font-size: 13px;
+      font-weight: 950;
+    }
+    .priceBig{
+      margin:0 0 6px;
+      font-size: 22px;
+      font-weight: 950;
+      color: rgba(255,215,0,0.92);
+    }
+    .priceDesc{
+      margin:0;
+      color: rgba(255,255,255,0.62);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .footer{
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display:flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: rgba(255,255,255,0.45);
+      font-size: 12px;
+      flex-wrap: wrap;
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <h1 class="section-title">Pricing</h1>
-    <p class="section-sub">Preview the signal. Unlock the proof.</p>
-
-    <div class="fyi">
-      <strong>FYI:</strong>
-      <span>Teaser</span> shows the verdict + headline market number.
-      <span>Unlock</span> reveals the Truth Packet (comps, fee math, rules fired, receipt).
-      <strong>Payment never changes the verdict</strong> — it only unlocks the proof.
-      Results are time-stamped and depend on listing details + market changes.
+  <div class="container">
+    <div class="topbar">
+      <div class="pill"><span class="dot"></span> Payment never changes truth</div>
+      <a class="navbtn" href="#pricing">Pricing</a>
     </div>
 
-    <div class="grid">
-      <!-- Free Teaser -->
-      <div class="pricing-card" tabindex="0" role="button" aria-label="Free Teaser plan">
-        <div class="plan">
-          <h3>Free Teaser</h3>
-          <div class="price">FREE</div>
-          <p class="desc">Instant PASS/FAIL + headline market number.</p>
-          <p class="micro">Perfect for quick scans.</p>
-          <div class="spacer"></div>
-          <button class="glow-btn" type="button">GET FREE TEASER</button>
+    <section class="hero">
+      <div class="heroLeft">
+        <h1>Verify with Confidence.</h1>
+        <p class="lead">
+          Garnett Work helps you stop guessing. Paste a listing link and your buy price to get a free
+          PASS/FAIL teaser. Unlock the Truth Packet when it matters: comps, math, rules fired, and a decision receipt.
+        </p>
+
+        <div class="ctaRow">
+          <a class="btn btnPrimary" href="#run">Run Free Teaser</a>
+          <a class="btn btnGhost" href="#how">How it works</a>
+        </div>
+
+        <div class="subNote">Soft launch ready. Built for speed, trust, and repeatable decisions.</div>
+
+        <!-- LOGO: put logo.png in the same folder as this file -->
+        <img class="brandLogo" src="logo.png" alt="Garnett Work logo" />
+      </div>
+
+      <div class="runCard" id="run">
+        <div class="runTitle">Run Garnett</div>
+        <div class="runDesc">
+          Paste a listing URL + deal details to get a free teaser verdict. (Demo UI — wire to API when ready.)
+        </div>
+
+        <label>LISTING URL</label>
+        <input class="input" placeholder="https://..." />
+
+        <div class="row2">
+          <div>
+            <label>BUY PRICE</label>
+            <input class="input" placeholder="$" />
+          </div>
+          <div>
+            <label>CONDITION</label>
+            <select>
+              <option>Used</option>
+              <option>Open Box</option>
+              <option>New</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="runBtn" type="button">Get Teaser Verdict (Free)</button>
+      </div>
+    </section>
+
+    <section class="midCards" id="how">
+      <div class="infoCard">
+        <h4>Free Teaser</h4>
+        <p>Instant PASS/FAIL + headline numbers. No sensitive details. Fast triage.</p>
+      </div>
+      <div class="infoCard">
+        <h4>Truth Packet (Paid)</h4>
+        <p>Comps, fee math, rules fired, and a decision receipt. Proof you can trust.</p>
+      </div>
+    </section>
+
+    <section class="pricingWrap" id="pricing">
+      <div class="pricingTitle">Pricing</div>
+      <div class="pricingSub">Keep it low, gain customers first. Teaser is free. Unlock only when it matters.</div>
+
+      <div class="pricingFYI">
+        <strong>FYI:</strong> <span class="gold">Teaser</span> = signal. <span class="gold">Unlock</span> = proof.
+        <strong>Payment never changes truth</strong> — it only unlocks detail.
+        <br><strong>Payments accepted:</strong> Lightning (BTC) • Card (Stripe)
+      </div>
+
+      <div class="pricingGrid">
+        <div class="priceCard" tabindex="0" role="button">
+          <h5>Free Teaser</h5>
+          <div class="priceBig">FREE</div>
+          <p class="priceDesc">Unlimited basic verdicts + headline numbers.</p>
+        </div>
+
+        <div class="priceCard" tabindex="0" role="button">
+          <h5>Single Unlock</h5>
+          <div class="priceBig">$0.25</div>
+          <p class="priceDesc">Unlock one full Truth Packet (comps, math, rules fired, receipt).</p>
+        </div>
+
+        <div class="priceCard" tabindex="0" role="button">
+          <h5>Starter</h5>
+          <div class="priceBig">$10/mo</div>
+          <p class="priceDesc">50 unlocks included. $0.20 each extra. Saved history.</p>
         </div>
       </div>
 
-      <!-- Single Unlock -->
-      <div class="pricing-card" tabindex="0" role="button" aria-label="Single Unlock plan">
-        <div class="plan">
-          <h3>Single Unlock</h3>
-          <div class="price">$0.25</div>
-          <p class="desc">Unlock the Truth Packet: comps, fee math, rules fired, receipt.</p>
-          <p class="micro">Best for one-off checks.</p>
-          <div class="spacer"></div>
-          <button class="glow-btn" type="button">UNLOCK PROOF ($0.25)</button>
-        </div>
+      <div class="pricingSub" style="margin-top:10px;">
+        Pro/Team/Enterprise tiers can be added after repeat users exist.
       </div>
+    </section>
 
-      <!-- Starter -->
-      <div class="pricing-card" tabindex="0" role="button" aria-label="Starter plan">
-        <div class="plan">
-          <div class="badge">BEST VALUE</div>
-          <h3>Starter</h3>
-          <div class="price">$10 / mo</div>
-          <p class="desc">50 unlocks included. Built for active flippers.</p>
-          <p class="micro">Lower cost per verdict.</p>
-          <div class="spacer"></div>
-          <button class="glow-btn" type="button">STARTER — $10 / MO</button>
-        </div>
-      </div>
+    <div class="footer">
+      <div>© 2026 Garnett Work</div>
+      <div>Truth decides. Payment only unlocks detail.</div>
     </div>
   </div>
-
-  <script>
-    // Make the whole card clickable: tapping the card triggers its button
-    document.querySelectorAll('.pricing-card').forEach(card => {
-      card.addEventListener('click', (e) => {
-        if (e.target.closest('button, a, input, select, textarea')) return;
-        card.querySelector('button')?.click();
-      });
-
-      // Enter/Space for keyboard users
-      card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          card.querySelector('button')?.click();
-        }
-      });
-    });
-
-    // Demo clicks (replace with your real actions)
-    document.querySelectorAll('.glow-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        alert(`Clicked: ${btn.textContent}`);
-      });
-    });
-  </script>
 </body>
 </html>
