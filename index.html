@@ -501,5 +501,69 @@
       <div>Truth decides. Payment only unlocks detail.</div>
     </div>
   </div>
+<script>
+  const runBtn = document.querySelector(".runBtn");
+  const inputs = document.querySelectorAll(".input");
+  const urlInput = inputs[0];     // listing url
+  const priceInput = inputs[1];   // buy price
+  const conditionSelect = document.querySelector("select");
+
+  // Add a result box under the button
+  const resultBox = document.createElement("div");
+  resultBox.style.marginTop = "12px";
+  resultBox.style.padding = "12px";
+  resultBox.style.borderRadius = "12px";
+  resultBox.style.border = "1px solid rgba(255,255,255,0.08)";
+  resultBox.style.background = "rgba(12,12,16,0.6)";
+  resultBox.style.color = "rgba(255,255,255,0.9)";
+  resultBox.style.fontSize = "13px";
+  resultBox.innerHTML = "Ready.";
+  runBtn.parentElement.appendChild(resultBox);
+
+  function money(n){
+    const x = Number(n);
+    if (Number.isNaN(x)) return n;
+    return x.toLocaleString(undefined, {style:"currency", currency:"USD"});
+  }
+
+  runBtn.addEventListener("click", async () => {
+    const listingUrl = (urlInput.value || "").trim();
+    const buyPrice = Number((priceInput.value || "").replace(/[^0-9.]/g, ""));
+    const condition = conditionSelect.value;
+
+    if (!listingUrl) {
+      resultBox.innerHTML = "❌ Please paste a listing URL.";
+      return;
+    }
+    if (!buyPrice || buyPrice <= 0) {
+      resultBox.innerHTML = "❌ Please enter a valid buy price.";
+      return;
+    }
+
+    // “Fake API” delay so it feels real
+    runBtn.disabled = true;
+    runBtn.textContent = "Running…";
+    resultBox.innerHTML = "Checking the market…";
+
+    await new Promise(r => setTimeout(r, 900));
+
+    // Dummy logic for testing only:
+    // under $900 = PASS, else FAIL
+    const marketPrice = 910;
+    const marginPct = ((marketPrice - buyPrice) / buyPrice) * 100;
+    const verdict = buyPrice <= 900 ? "PASS ✅" : "FAIL ❌";
+    const confidence = buyPrice <= 900 ? "High" : "Med";
+
+    resultBox.innerHTML =
+      `<strong>${verdict}</strong> · Confidence: <strong>${confidence}</strong><br>` +
+      `Market: <strong>${money(marketPrice)}</strong> · Buy: <strong>${money(buyPrice)}</strong> · ` +
+      `Margin: <strong>${marginPct.toFixed(1)}%</strong><br>` +
+      `<span style="color:rgba(255,255,255,0.65)">Why:</span> 10 sold comps (30d) · Fees included · Rule fired: margin`;
+
+    runBtn.disabled = false;
+    runBtn.textContent = "Get Teaser Verdict (Free)";
+  });
+</script>
+
 </body>
 </html>
