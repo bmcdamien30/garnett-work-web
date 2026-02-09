@@ -8,9 +8,7 @@
   <style>
     :root{
       --bg0:#000;
-      --bg1:#0b0b0f;
       --panel: rgba(18,18,22,0.72);
-      --panel2: rgba(18,18,22,0.62);
       --border: rgba(255,255,255,0.08);
       --text: rgba(255,255,255,0.92);
       --muted: rgba(255,255,255,0.65);
@@ -82,6 +80,7 @@
       cursor:pointer;
       text-decoration:none;
       user-select:none;
+      transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease, border-color 140ms ease;
     }
 
     /* Hero grid */
@@ -99,7 +98,7 @@
 
     .heroLeft{
       position:relative;
-      min-height: 320px;
+      min-height: 360px;
       padding: 18px 0 0;
     }
 
@@ -153,7 +152,7 @@
       border: 1px solid rgba(255,255,255,0.10);
     }
 
-    /* Universal glow for ALL buttons + .navbtn */
+    /* ===== Glow for ALL buttons (hover + pressed) ===== */
     .btn:hover, .navbtn:hover, button:hover{
       transform: translateY(-2px);
       filter: brightness(1.05);
@@ -186,25 +185,32 @@
       font-size: 12.5px;
     }
 
-    /* Logo placement like screenshot */
+    /* ===== LOGO: Bigger, to the right, lower, centered-ish in the hero ===== */
     .brandLogo{
       position:absolute;
-      right: 12px;
-      top: 112px;
-      width: 220px;
-      max-width: 38%;
+      right: -60px;          /* further right */
+      top: 210px;            /* lower */
+      width: 520px;          /* your request */
+      max-width: 70%;
       opacity: 0.98;
-      filter: drop-shadow(0 0 22px rgba(255,215,0,0.18));
+      filter: drop-shadow(0 0 34px rgba(255,215,0,0.24));
+      pointer-events: none;
     }
 
+    /* Scale down on smaller laptops */
+    @media (max-width: 1200px){
+      .brandLogo{ width: 420px; right: -35px; top: 220px; }
+    }
+
+    /* Mobile: place logo nicely in-flow */
     @media (max-width: 980px){
       .brandLogo{
         position: relative;
         right: auto;
         top: auto;
-        width: 240px;
-        max-width: 70%;
-        margin-top: 14px;
+        width: 320px;
+        max-width: 85%;
+        margin-top: 16px;
       }
     }
 
@@ -266,6 +272,7 @@
       font-weight: 950;
       letter-spacing: 0.2px;
       cursor:pointer;
+      transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease, border-color 140ms ease;
     }
 
     /* Mid cards */
@@ -301,16 +308,12 @@
     }
 
     /* Pricing */
-    .pricingWrap{
-      margin-top: 8px;
-    }
-
+    .pricingWrap{ margin-top: 8px; }
     .pricingTitle{
       margin: 10px 0 6px;
       font-size: 18px;
       font-weight: 950;
     }
-
     .pricingSub{
       margin: 0 0 10px;
       color: rgba(255,255,255,0.62);
@@ -321,6 +324,7 @@
       margin: 0 0 12px;
       color: rgba(255,255,255,0.55);
       font-size: 12px;
+      line-height: 1.45;
     }
     .pricingFYI strong{ color: rgba(255,255,255,0.82); }
     .pricingFYI .gold{ color: rgba(255,215,0,0.9); font-weight: 900; }
@@ -411,7 +415,7 @@
 
         <div class="subNote">Soft launch ready. Built for speed, trust, and repeatable decisions.</div>
 
-        <!-- LOGO: put logo.png in the same folder as this file -->
+        <!-- IMPORTANT: put your logo file in the same folder and name it logo.png -->
         <img class="brandLogo" src="logo.png" alt="Garnett Work logo" />
       </div>
 
