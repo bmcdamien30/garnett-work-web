@@ -184,35 +184,27 @@
       color: rgba(255,255,255,0.55);
       font-size: 12.5px;
     }
+     /* ===== LOGO (FIXED): Moved back to the LEFT ===== */
+.brandLogo {
+  position: absolute;
+  left: 20px;          /* Changed from right to left */
+  top: 165px;
+  width: 1020px;
+  max-width: 70%;
+  opacity: 0.98;
+  filter: drop-shadow(0 0 34px rgba(255,215,0,0.24));
+  pointer-events: none;
+}
 
-    /* ===== LOGO (UPDATED AGAIN): move a bit MORE RIGHT ===== */
-    .brandLogo{
-      position:absolute;
-      right: -185px;        /* was -155px → more right */
-      top: 165px;
-      width: 1020px;
-      max-width: 70%;
-      opacity: 0.98;
-      filter: drop-shadow(0 0 34px rgba(255,215,0,0.24));
-      pointer-events: none;
-    }
-
-    /* Scale down on smaller laptops */
-    @media (max-width: 1200px){
-      .brandLogo{ width: 420px; right: -90px; top: 175px; }
-    }
-
-    /* Mobile: place logo nicely in-flow */
-    @media (max-width: 980px){
-      .brandLogo{
-        position: relative;
-        right: auto;
-        top: auto;
-        width: 320px;
-        max-width: 85%;
-        margin-top: 16px;
-      }
-    }
+/* Adjust for smaller laptops */
+@media (max-width: 1200px) {
+  .brandLogo { 
+    width: 420px; 
+    left: 10px;        /* Keeping it on the left */
+    right: auto; 
+    top: 175px; 
+  }
+}
 
     /* Right run card */
     .runCard{
