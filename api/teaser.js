@@ -15,7 +15,7 @@ export default async function handler(req, res) {
 
     const url = String(listingUrl || "").trim();
     const buy = Number(String(buyPrice || "").replace(/[^\d.]/g, ""));
-    const cond = String(condition || "Used").trim();
+    const cond = String(condition ?? "Used").trim();
 
     if (!url) return res.status(400).json({ error: "Missing listingUrl" });
     if (!buy || buy <= 0) return res.status(400).json({ error: "Invalid buyPrice" });
