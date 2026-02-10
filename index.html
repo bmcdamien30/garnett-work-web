@@ -540,28 +540,34 @@
       return;
     }
 
-    // “Fake API” delay so it feels real
     runBtn.disabled = true;
     runBtn.textContent = "Running…";
     resultBox.innerHTML = "Checking the market…";
 
-    await new Promise(r => setTimeout(r, 900));
+    try {
+      const resp = await fetch("/api/teaser", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ listingUrl, buyPrice, condition })
+      });
 
-    // Dummy logic for testing only:
-    // under $900 = PASS, else FAIL
-    const marketPrice = 910;
-    const marginPct = ((marketPrice - buyPrice) / buyPrice) * 100;
-    const verdict = buyPrice <= 900 ? "PASS ✅" : "FAIL ❌";
-    const confidence = buyPrice <= 900 ? "High" : "Med";
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data?.error || "Request failed");
 
-    resultBox.innerHTML =
-      `<strong>${verdict}</strong> · Confidence: <strong>${confidence}</strong><br>` +
-      `Market: <strong>${money(marketPrice)}</strong> · Buy: <strong>${money(buyPrice)}</strong> · ` +
-      `Margin: <strong>${marginPct.toFixed(1)}%</strong><br>` +
-      `<span style="color:rgba(255,255,255,0.65)">Why:</span> 10 sold comps (30d) · Fees included · Rule fired: margin`;
+      const verdictIcon = data.verdict === "PASS" ? "✅" : (data.verdict === "FAIL" ? "❌" : "⚠️");
 
-    runBtn.disabled = false;
-    runBtn.textContent = "Get Teaser Verdict (Free)";
+      resultBox.innerHTML =
+        `<strong>${data.verdict} ${verdictIcon}</strong> · Confidence: <strong>${data.confidence}</strong><br>` +
+        `Market: <strong>${money(data.marketPrice)}</strong> · Buy: <strong>${money(data.buyPrice)}</strong> · ` +
+        `Margin: <strong>${Number(data.marginPct).toFixed(1)}%</strong><br>` +
+        `<span style="color:rgba(255,255,255,0.65)">Why:</span> ${data.why}`;
+
+    } catch (e) {
+      resultBox.innerHTML = `❌ ${e.message}`;
+    } finally {
+      runBtn.disabled = false;
+      runBtn.textContent = "Get Teaser Verdict (Free)";
+    }
   });
 </script>
 
