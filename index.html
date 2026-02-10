@@ -554,13 +554,25 @@
       const data = await resp.json();
       if (!resp.ok) throw new Error(data?.error || "Request failed");
 
-      const verdictIcon = data.verdict === "PASS" ? "✅" : (data.verdict === "FAIL" ? "❌" : "⚠️");
 
-      resultBox.innerHTML =
-        `<strong>${data.verdict} ${verdictIcon}</strong> · Confidence: <strong>${data.confidence}</strong><br>` +
-        `Market: <strong>${money(data.marketPrice)}</strong> · Buy: <strong>${money(data.buyPrice)}</strong> · ` +
-        `Margin: <strong>${Number(data.marginPct).toFixed(1)}%</strong><br>` +
-        `<span style="color:rgba(255,255,255,0.65)">Why:</span> ${data.why}`;
+     const verdictIcon =
+  data.verdict === "PASS" ? "✅" :
+  data.verdict === "FAIL" ? "❌" :
+  "⚠️";
+
+resultBox.innerHTML = `
+  <strong>${data.verdict} ${verdictIcon}</strong> · Confidence: <strong>${data.confidence}</strong><br>
+  Market: <strong>${data.marketPrice === null ? "N/A" : money(data.marketPrice)}</strong> ·
+  Buy: <strong>${money(data.buyPrice)}</strong> ·
+  Margin: <strong>${data.marginPct === null ? "N/A" : Number(data.marginPct).toFixed(1) + "%"}</strong><br>
+  <span style="color:rgba(255,255,255,0.65)">Why:</span> ${data.why}
+`;
+
+    
+
+
+
+
 
     } catch (e) {
       resultBox.innerHTML = `❌ ${e.message}`;
