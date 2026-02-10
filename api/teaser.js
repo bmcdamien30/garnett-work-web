@@ -1,11 +1,14 @@
-// /api/teaser.js
+// api/teaser.js
 export default async function handler(req, res) {
   // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
+  // Preflight
   if (req.method === "OPTIONS") return res.status(200).end();
+
+  // Only allow POST
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed. Use POST." });
   }
@@ -13,6 +16,7 @@ export default async function handler(req, res) {
   try {
     const { listingUrl, buyPrice, condition } = req.body || {};
 
+    // Basic input hygiene
     const url = String(listingUrl || "").trim();
     const buy = Number(String(buyPrice || "").replace(/[^\d.]/g, ""));
     const cond = String(condition ?? "Used").trim();
@@ -20,7 +24,7 @@ export default async function handler(req, res) {
     if (!url) return res.status(400).json({ error: "Missing listingUrl" });
     if (!buy || buy <= 0) return res.status(400).json({ error: "Invalid buyPrice" });
 
-    // Demo logic
+    // Demo logic (replace later with real comps)
     const marketPrice = 910;
     const marginPct = ((marketPrice - buy) / buy) * 100;
 
@@ -28,6 +32,7 @@ export default async function handler(req, res) {
     const confidence = buy <= 900 ? "High" : "Med";
 
     return res.status(200).json({
+      ok: true,
       verdict,
       confidence,
       marketPrice,
@@ -38,6 +43,9 @@ export default async function handler(req, res) {
       listingUrl: url,
     });
   } catch (e) {
-    return res.status(500).json({ error: "Server error", detail: String(e?.message || e) });
+    return res.status(500).json({
+      error: "Server error",
+      detail: String(e?.message || e),
+    });
   }
 }
