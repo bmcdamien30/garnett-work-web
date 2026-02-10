@@ -545,7 +545,7 @@
     resultBox.innerHTML = "Checking the market…";
 
     try {
-      const resp = await fetch("/api/teaser", {
+     const resp = await fetch("/api/teaser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ listingUrl, buyPrice, condition })
