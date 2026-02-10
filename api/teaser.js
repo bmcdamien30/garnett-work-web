@@ -30,15 +30,23 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "Missing BACKEND_URL env var in Vercel" });
     }
 
+
     const upstream = await fetch(`${BACKEND_URL}/teaser`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ listingUrl: url, buyPrice: buy, condition: cond }),
 });
 
-const text = await upstream.text();
-res.status(upstream.status).send(text);
-return;
+const data = await upstream.json();
+return res.status(upstream.status).json(data);
+
+
+
+
+
+
+
+
 
 
 
