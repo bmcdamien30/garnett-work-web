@@ -24,21 +24,17 @@ export default async function handler(req, res) {
     if (!url) return res.status(400).json({ error: "Missing listingUrl" });
     if (!buy || buy <= 0) return res.status(400).json({ error: "Invalid buyPrice" });
 
-    // Demo logic (replace later with real comps)
-    const marketPrice = 910;
-    const marginPct = ((marketPrice - buy) / buy) * 100;
-
-    const verdict = buy <= 900 ? "PASS" : "FAIL";
-    const confidence = buy <= 900 ? "High" : "Med";
+    // DEMO placeholder (until real eBay sold comps are wired)
+    const marketPrice = null;
 
     return res.status(200).json({
       ok: true,
-      verdict,
-      confidence,
+      verdict: "DEMO",
+      confidence: "N/A",
       marketPrice,
       buyPrice: buy,
-      marginPct: Number(marginPct.toFixed(1)),
-      why: "10 sold comps (30d) · Fees included · Rule fired: margin",
+      marginPct: null,
+      why: "Demo mode: marketPrice is not wired to eBay sold comps yet.",
       condition: cond,
       listingUrl: url,
     });
@@ -49,3 +45,4 @@ export default async function handler(req, res) {
     });
   }
 }
+
