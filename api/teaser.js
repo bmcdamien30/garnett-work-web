@@ -20,12 +20,12 @@ export default async function handler(req, res) {
     const url = String(listingUrl || "").trim();
     const buy = Number(String(buyPrice || "").replace(/[^\d.]/g, ""));
     const cond = String(condition ?? "Used").trim();
-
+    const BACKEND_URL = "https://begun-encourages-infectious-bay.trycloudflare.com";
     if (!url) return res.status(400).json({ error: "Missing listingUrl" });
     if (!buy || buy <= 0) return res.status(400).json({ error: "Invalid buyPrice" });
 
         // Forward to your real backend (Node) for live eBay sold comps logic
-    const BACKEND_URL = process.env.BACKEND_URL;
+    
     if (!BACKEND_URL) {
       return res.status(500).json({ error: "Missing BACKEND_URL env var in Vercel" });
     }
