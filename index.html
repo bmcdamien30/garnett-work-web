@@ -184,17 +184,23 @@
       color: rgba(255,255,255,0.55);
       font-size: 12.5px;
     }
-     /* ===== LOGO (FIXED): Moved back to the LEFT ===== */
+   /* Center the hero logo */
+.hero-logo-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 18px 0 34px 0; /* spacing above/below logo */
+}
+
 .brandLogo {
-  position: absolute;
-  left: 20px;          /* Changed from right to left */
-  top: 165px;
-  width: 1020px;
-  max-width: 70%;
+  width: 320px;           /* adjust size */
+  max-width: 60vw;        /* responsive */
+  height: auto;
   opacity: 0.98;
   filter: drop-shadow(0 0 34px rgba(255,215,0,0.24));
   pointer-events: none;
 }
+
 
 /* Adjust for smaller laptops */
 @media (max-width: 1200px) {
@@ -407,9 +413,10 @@
 
         <div class="subNote">Soft launch ready. Built for speed, trust, and repeatable decisions.</div>
 
-        <!-- IMPORTANT: put your logo file in the same folder and name it logo.png -->
-        <img class="brandLogo" src="logo.png" alt="Garnett Work logo" />
-      </div>
+       <div class="hero-logo-wrapper">
+  <img class="brandLogo" src="logo.png" alt="Garnett Work logo" />
+</div>
+    </div>
 
       <div class="runCard" id="run">
         <div class="runTitle">Run Garnett</div>
