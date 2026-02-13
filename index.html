@@ -537,7 +537,7 @@
     resultBox.innerHTML = "Checking the market…";
 
     try {
-     const resp = await fetch("/api/teaser", {
+     const resp = await fetch("https://garnett-backend-204821439481.us-east1.run.app/teaser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ listingUrl, buyPrice, condition })
