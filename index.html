@@ -564,7 +564,10 @@ resultBox.innerHTML = `
   Market: <strong>${data.marketPrice === null ? "N/A" : money(data.marketPrice)}</strong> ·
   Buy: <strong>${money(data.buyPrice)}</strong> ·
   Margin: <strong>${data.marginPct === null ? "N/A" : Number(data.marginPct).toFixed(1) + "%"}</strong><br>
-  <span style="color:rgba(255,255,255,0.65)">Why:</span> ${data.why}
+  <span style="color:rgba(255,255,255,0.65)">
+Data based on ${data.confidence} confidence from recent sold comps.
+</span>
+
 `;
 
     
