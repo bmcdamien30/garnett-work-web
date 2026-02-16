@@ -243,39 +243,19 @@ h1{
               </select>
             </div>
           </div>
+                    <button type="submit" class="runBtn">Get Teaser Verdict (Free)</button>
 
-          <button class="btn primary" type="submit">Get Teaser Verdict (Free)</button>
+          <div id="result" style="display:none; margin-top:14px;">
+            <div id="pill" class="pill">—</div>
+            <div>MARKET: <span id="market">—</span></div>
+            <div>MARGIN: <span id="margin">—</span></div>
+            <div>RISK: <span id="risk">—</span></div>
+            <div id="why" style="opacity:.8; margin-top:6px;"></div>
+          </div>
         </form>
+      
 
-        <div class="result" id="result">
-          <div class="kicker">TEASER VERDICT</div>
-          <div class="headline">
-            <span class="pill pass" id="pill">PASS</span>
-            <span style="color: rgba(182,182,191,.9); font-weight:800;">Unlocked detail available in Truth Packet</span>
-          </div>
-
-          <div class="metrics">
-            <div class="metric">
-              <div class="t">MARKET</div>
-              <div class="v" id="market">$910</div>
-            </div>
-            <div class="metric">
-              <div class="t">MARGIN</div>
-              <div class="v" id="margin">+17%</div>
-            </div>
-            <div class="metric">
-              <div class="t">RISK</div>
-              <div class="v" id="risk">LOW</div>
-            </div>
-          </div>
-
-          <div class="unlock">
-            <a class="btn ghost" href="#pricing">Unlock Truth Packet</a>
-            <div class="mini">Paid unlock delivers comps + math + rules fired + receipt.</div>
-          </div>
-        </div>
-      </div>
-    </div>
+          
 
     <div class="section" id="how">
       <div class="grid2">
