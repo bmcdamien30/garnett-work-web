@@ -541,10 +541,10 @@
 
     runBtn.disabled = true;
     runBtn.textContent = "Running…";
-    resultBox.innerHTML = "Checking the market…";
+    resultBox.innerHTML = "Checking the market…"https://garnett-backend-7pmngu3c4q-ue.a.run.app/teaser";
 
     try {
-     const resp = await fetch("https://garnett-backend-204821439481.us-east1.run.app/teaser", {
+     const resp = await fetch("", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ listingUrl, buyPrice, condition })
