@@ -234,40 +234,55 @@ app.post("/teaser", async (req, res) => {
     const canonicalCondition = String(condition || "unknown").trim().toLowerCase();
     const canonicalQuery = `${canonicalUrl}|buy:${buy.toFixed(2)}|condition:${canonicalCondition}`;
     const staleCachedTeaser = cacheBypassed ? null : teaserCacheGetAny(canonicalQuery);
+    const sendRateLimited = (payload, extraDebug = {}) => {
+      const cooldownRemainingSec = Math.ceil((cooldownUntilMs - Date.now()) / 1000);
+      return res.status(200).json(
+        withRuntimeDebug(
+          {
+            ...payload,
+            reason: "RATE_LIMITED",
+            retryAfterSec: payload?.retryAfterSec ?? cooldownRemainingSec,
+            debug: {
+              ...(payload?.debug || {}),
+              cooldownUntilMs,
+              cooldownRemainingSec,
+            },
+          },
+          {
+            ...extraDebug,
+            cooldownUntilMs,
+            cooldownRemainingSec,
+          }
+        )
+      );
+    };
 
     if (Date.now() < cooldownUntilMs) {
-      const cooldownRemainingSec = Math.ceil((cooldownUntilMs - Date.now()) / 1000);
       if (staleCachedTeaser?.ok) {
         return res.json(
           withRuntimeDebug(staleCachedTeaser, {
             usedCache: false,
             usedStaleCache: true,
             cacheBypassed,
-            cooldownRemainingSec,
+            cooldownRemainingSec: Math.ceil((cooldownUntilMs - Date.now()) / 1000),
             cooldownUntilMs,
           })
         );
       }
 
-      return res.status(200).json(
-        withRuntimeDebug(
-          {
-            ok: false,
-            reason: "RATE_LIMITED",
-            retryAfterSec: cooldownRemainingSec,
-            debug: {
-              cooldownRemainingSec,
-              cooldownUntilMs,
-            },
+      return sendRateLimited(
+        {
+          ok: false,
+          debug: {
+            cooldownGate: true,
           },
-          {
-            usedCache: false,
-            usedStaleCache: false,
-            cacheBypassed,
-            cooldownRemainingSec,
-            cooldownUntilMs,
-          }
-        )
+        },
+        {
+          usedCache: false,
+          usedStaleCache: false,
+          cacheBypassed,
+          cooldownGate: true,
+        }
       );
     }
 
@@ -326,29 +341,22 @@ app.post("/teaser", async (req, res) => {
         );
       }
 
-      return res.status(200).json(
-        withRuntimeDebug(
-          {
-            ok: false,
-            reason: "RATE_LIMITED",
-            error: "eBay rate limit hit (Finding API). Wait 20-30 minutes and retry.",
-            retryAfterSec,
-            debug: {
-              findingStatus: finding.status,
-              findingUrl: finding.url,
-              findingBodyFirst300: finding.rawFirst300,
-              cooldownRemainingSec,
-              cooldownUntilMs,
-            },
+      return sendRateLimited(
+        {
+          ok: false,
+          error: "eBay rate limit hit (Finding API). Wait 20-30 minutes and retry.",
+          retryAfterSec,
+          debug: {
+            findingStatus: finding.status,
+            findingUrl: finding.url,
+            findingBodyFirst300: finding.rawFirst300,
           },
-          {
-            usedCache: false,
-            usedStaleCache: false,
-            cacheBypassed,
-            cooldownRemainingSec,
-            cooldownUntilMs,
-          }
-        )
+        },
+        {
+          usedCache: false,
+          usedStaleCache: false,
+          cacheBypassed,
+        }
       );
     }
 
