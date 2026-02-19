@@ -235,19 +235,6 @@ app.post("/teaser", async (req, res) => {
     const canonicalQuery = `${canonicalUrl}|buy:${buy.toFixed(2)}|condition:${canonicalCondition}`;
     const staleCachedTeaser = cacheBypassed ? null : teaserCacheGetAny(canonicalQuery);
 
-    if (!cacheBypassed) {
-      const freshCachedTeaser = teaserCacheGetFresh(canonicalQuery);
-      if (freshCachedTeaser) {
-        return res.json(
-          withRuntimeDebug(freshCachedTeaser, {
-            usedCache: true,
-            usedStaleCache: false,
-            cacheBypassed: false,
-          })
-        );
-      }
-    }
-
     if (Date.now() < cooldownUntilMs) {
       const cooldownRemainingSec = Math.ceil((cooldownUntilMs - Date.now()) / 1000);
       if (staleCachedTeaser?.ok) {
@@ -284,6 +271,19 @@ app.post("/teaser", async (req, res) => {
       );
     }
 
+    if (!cacheBypassed) {
+      const freshCachedTeaser = teaserCacheGetFresh(canonicalQuery);
+      if (freshCachedTeaser) {
+        return res.json(
+          withRuntimeDebug(freshCachedTeaser, {
+            usedCache: true,
+            usedStaleCache: false,
+            cacheBypassed: false,
+          })
+        );
+      }
+    }
+
     // title cache
     const titleCacheKey = `title:${itemId}`;
     let title = cacheGet(titleCacheKey);
@@ -313,12 +313,15 @@ app.post("/teaser", async (req, res) => {
     if (isFindingRateLimited(finding)) {
       const retryAfterSec = Number(finding?.data?.retryAfterSec) || 1800;
       cooldownUntilMs = Date.now() + (retryAfterSec || 1800) * 1000;
+      const cooldownRemainingSec = Math.ceil((cooldownUntilMs - Date.now()) / 1000);
       if (staleCachedTeaser) {
         return res.json(
           withRuntimeDebug(staleCachedTeaser, {
             usedCache: false,
             usedStaleCache: true,
             cacheBypassed: false,
+            cooldownRemainingSec,
+            cooldownUntilMs,
           })
         );
       }
@@ -334,12 +337,16 @@ app.post("/teaser", async (req, res) => {
               findingStatus: finding.status,
               findingUrl: finding.url,
               findingBodyFirst300: finding.rawFirst300,
+              cooldownRemainingSec,
+              cooldownUntilMs,
             },
           },
           {
             usedCache: false,
             usedStaleCache: false,
             cacheBypassed,
+            cooldownRemainingSec,
+            cooldownUntilMs,
           }
         )
       );
