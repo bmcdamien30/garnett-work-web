@@ -15,6 +15,7 @@ app.get("/", (req, res) => res.status(200).send("Garnett Teaser API OK"));
 
 const FINDING_COOLDOWN_MS = 3500;
 let lastFindingCallAt = 0;
+let cooldownUntilMs = 0;
 
 // tiny in-memory cache so we don't hammer Finding API
 const CACHE = new Map();
@@ -247,6 +248,42 @@ app.post("/teaser", async (req, res) => {
       }
     }
 
+    if (Date.now() < cooldownUntilMs) {
+      const cooldownRemainingSec = Math.ceil((cooldownUntilMs - Date.now()) / 1000);
+      if (staleCachedTeaser?.ok) {
+        return res.json(
+          withRuntimeDebug(staleCachedTeaser, {
+            usedCache: false,
+            usedStaleCache: true,
+            cacheBypassed,
+            cooldownRemainingSec,
+            cooldownUntilMs,
+          })
+        );
+      }
+
+      return res.status(200).json(
+        withRuntimeDebug(
+          {
+            ok: false,
+            reason: "RATE_LIMITED",
+            retryAfterSec: cooldownRemainingSec,
+            debug: {
+              cooldownRemainingSec,
+              cooldownUntilMs,
+            },
+          },
+          {
+            usedCache: false,
+            usedStaleCache: false,
+            cacheBypassed,
+            cooldownRemainingSec,
+            cooldownUntilMs,
+          }
+        )
+      );
+    }
+
     // title cache
     const titleCacheKey = `title:${itemId}`;
     let title = cacheGet(titleCacheKey);
@@ -274,6 +311,8 @@ app.post("/teaser", async (req, res) => {
     }
 
     if (isFindingRateLimited(finding)) {
+      const retryAfterSec = Number(finding?.data?.retryAfterSec) || 1800;
+      cooldownUntilMs = Date.now() + (retryAfterSec || 1800) * 1000;
       if (staleCachedTeaser) {
         return res.json(
           withRuntimeDebug(staleCachedTeaser, {
@@ -290,7 +329,7 @@ app.post("/teaser", async (req, res) => {
             ok: false,
             reason: "RATE_LIMITED",
             error: "eBay rate limit hit (Finding API). Wait 20-30 minutes and retry.",
-            retryAfterSec: 1800,
+            retryAfterSec,
             debug: {
               findingStatus: finding.status,
               findingUrl: finding.url,
