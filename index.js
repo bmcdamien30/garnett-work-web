@@ -31,6 +31,54 @@ function cacheSet(key, value, ttlMs = 5 * 60 * 1000) {
   CACHE.set(key, { value, expiresAt: Date.now() + ttlMs });
 }
 
+const TEASER_CACHE_TTL_MS = 15 * 60 * 1000;
+const TEASER_CACHE = new Map();
+const BUILD_ID =
+  process.env.K_REVISION ||
+  process.env.VERCEL_GIT_COMMIT_SHA ||
+  process.env.VERCEL_COMMIT_SHA ||
+  null;
+
+function teaserCachePeek(key) {
+  return TEASER_CACHE.get(key) || null;
+}
+
+function teaserCacheGetFresh(key) {
+  const hit = teaserCachePeek(key);
+  if (!hit) return null;
+  return Date.now() <= hit.expiresAt ? hit.value : null;
+}
+
+function teaserCacheGetAny(key) {
+  const hit = teaserCachePeek(key);
+  return hit ? hit.value : null;
+}
+
+function teaserCacheSet(key, value, ttlMs = TEASER_CACHE_TTL_MS) {
+  TEASER_CACHE.set(key, { value, expiresAt: Date.now() + ttlMs });
+}
+
+function withRuntimeDebug(payload, extraDebug) {
+  return {
+    ...payload,
+    debug: {
+      ...(payload.debug || {}),
+      serverTs: new Date().toISOString(),
+      buildId: BUILD_ID,
+      ...extraDebug,
+    },
+  };
+}
+
+function isFindingRateLimited(finding) {
+  const msg = JSON.stringify(finding?.data || {}).toLowerCase();
+  return (
+    finding?.status !== 200 ||
+    msg.includes("ratelimiter") ||
+    msg.includes("exceeded the number of times")
+  );
+}
+
 function refuse(res, msg, retryAfterSec = 30) {
   return res.status(200).json({
     ok: false,
@@ -161,6 +209,7 @@ async function callFinding(APP_ID, keywords) {
 app.post("/teaser", async (req, res) => {
   try {
     const { listingUrl, buyPrice, condition } = req.body;
+    const cacheBypassed = Object.prototype.hasOwnProperty.call(req.query || {}, "cb");
 
     const APP_ID = process.env.EBAY_APP_ID;
     if (!APP_ID) return res.status(500).json({ error: "Missing EBAY_APP_ID in .env" });
@@ -181,6 +230,22 @@ app.post("/teaser", async (req, res) => {
     if (!buy || buy <= 0) return res.status(400).json({ error: "Invalid buyPrice" });
 
     const canonicalUrl = `https://www.ebay.com/itm/${itemId}`;
+    const canonicalCondition = String(condition || "unknown").trim().toLowerCase();
+    const canonicalQuery = `${canonicalUrl}|buy:${buy.toFixed(2)}|condition:${canonicalCondition}`;
+    const staleCachedTeaser = cacheBypassed ? null : teaserCacheGetAny(canonicalQuery);
+
+    if (!cacheBypassed) {
+      const freshCachedTeaser = teaserCacheGetFresh(canonicalQuery);
+      if (freshCachedTeaser) {
+        return res.json(
+          withRuntimeDebug(freshCachedTeaser, {
+            usedCache: true,
+            usedStaleCache: false,
+            cacheBypassed: false,
+          })
+        );
+      }
+    }
 
     // title cache
     const titleCacheKey = `title:${itemId}`;
@@ -208,18 +273,38 @@ app.post("/teaser", async (req, res) => {
       cacheSet(findingCacheKey, finding, 2 * 60 * 1000);
     }
 
-    // If blocked / rate limited (eBay often returns an errorMessage payload)
-const msg = JSON.stringify(finding.data || {});
-if (
-  finding.status === 429 ||
-  finding.status === 500 ||
-  msg.includes("Service call has exceeded the number of times the operation is allowed") ||
-  msg.includes('"subdomain":["RateLimiter"]') ||
-  msg.includes('"domain":["Security"]') ||
-  msg.includes('"errorId":["10001"]')
-) {
-  return refuse(res, "eBay rate limit hit (Finding API). Wait 20–30 minutes and retry.", 1800);
-}
+    if (isFindingRateLimited(finding)) {
+      if (staleCachedTeaser) {
+        return res.json(
+          withRuntimeDebug(staleCachedTeaser, {
+            usedCache: false,
+            usedStaleCache: true,
+            cacheBypassed: false,
+          })
+        );
+      }
+
+      return res.status(200).json(
+        withRuntimeDebug(
+          {
+            ok: false,
+            reason: "RATE_LIMITED",
+            error: "eBay rate limit hit (Finding API). Wait 20-30 minutes and retry.",
+            retryAfterSec: 1800,
+            debug: {
+              findingStatus: finding.status,
+              findingUrl: finding.url,
+              findingBodyFirst300: finding.rawFirst300,
+            },
+          },
+          {
+            usedCache: false,
+            usedStaleCache: false,
+            cacheBypassed,
+          }
+        )
+      );
+    }
 
     const items =
       finding.data?.findCompletedItemsResponse?.[0]?.searchResult?.[0]?.item || [];
@@ -237,7 +322,7 @@ if (
     const verdict = marginPct >= 10 ? "PASS" : "FAIL";
     const confidence = confidenceFromComps(compsCount);
 
-    return res.json({
+    const payload = {
       ok: true,
       verdict,
       confidence,
@@ -251,9 +336,21 @@ if (
       debug: {
         findingStatus: finding.status,
         findingUrl: finding.url,
-        findingBodyFirst300: finding.rawFirst300
+        findingBodyFirst300: finding.rawFirst300,
       },
-    });
+    };
+
+    if (!cacheBypassed) {
+      teaserCacheSet(canonicalQuery, payload);
+    }
+
+    return res.json(
+      withRuntimeDebug(payload, {
+        usedCache: false,
+        usedStaleCache: false,
+        cacheBypassed,
+      })
+    );
   } catch (e) {
     return res.status(500).json({ error: `Garnett Error: ${e.message}` });
   }
@@ -261,4 +358,3 @@ if (
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, "0.0.0.0", () => console.log(`✅ Garnett Teaser API running on ${PORT}`));
-
