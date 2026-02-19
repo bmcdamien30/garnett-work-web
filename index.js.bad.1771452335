@@ -1,3 +1,4 @@
+cat > index.js <<'EOF'
 import express from "express";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
@@ -208,18 +209,10 @@ app.post("/teaser", async (req, res) => {
       cacheSet(findingCacheKey, finding, 2 * 60 * 1000);
     }
 
-    // If blocked / rate limited (eBay often returns an errorMessage payload)
-const msg = JSON.stringify(finding.data || {});
-if (
-  finding.status === 429 ||
-  finding.status === 500 ||
-  msg.includes("Service call has exceeded the number of times the operation is allowed") ||
-  msg.includes('"subdomain":["RateLimiter"]') ||
-  msg.includes('"domain":["Security"]') ||
-  msg.includes('"errorId":["10001"]')
-) {
-  return refuse(res, "eBay rate limit hit (Finding API). Wait 20–30 minutes and retry.", 1800);
-}
+    // If blocked / rate limited
+    if (finding.status === 429 || /rate limit/i.test(JSON.stringify(finding.data))) {
+      return refuse(res, "eBay rate limit hit (Finding API). Wait 20–30 minutes and retry.", 1800);
+    }
 
     const items =
       finding.data?.findCompletedItemsResponse?.[0]?.searchResult?.[0]?.item || [];
@@ -250,8 +243,6 @@ if (
       condition: condition || "unknown",
       debug: {
         findingStatus: finding.status,
-        findingUrl: finding.url,
-        findingBodyFirst300: finding.rawFirst300
       },
     });
   } catch (e) {
@@ -261,4 +252,5 @@ if (
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, "0.0.0.0", () => console.log(`✅ Garnett Teaser API running on ${PORT}`));
-
+EOF
+thats ever

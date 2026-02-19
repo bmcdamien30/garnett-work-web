@@ -1,0 +1,247 @@
+console.log("🔥 THIS IS THE ACTIVE INDEX.JS FILE 🔥");
+import express from "express";
+import fetch from "node-fetch";
+import dotenv from "dotenv";
+import cors from "cors";
+
+dotenv.config();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+app.get("/", (req, res) => res.status(200).send("Garnett Teaser API OK"));
+
+function extractItemId(text) {
+  const s = String(text || "");
+
+  // Prefer /itm/<digits>
+  const m1 = s.match(/\/itm\/(\d{12,14})/i);
+  if (m1) return m1[1];
+
+  // Fallback: any 12–14 digit run anywhere
+  const m2 = s.match(/(\d{12,14})/);
+  return m2 ? m2[1] : null;
+}
+
+function cleanTitle(t) {
+  if (!t) return "";
+  return String(t)
+    .replace(/\s+/g, " ")
+    .replace(/\s*[\|\-]\s*eBay\s*$/i, "")
+    .trim();
+}
+
+async function fetchTitleFromListingHtml(listingUrl) {
+  // 1) Try direct fetch
+  const direct = await fetch(listingUrl, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+      "Accept-Language": "en-US,en;q=0.9",
+    },
+  }).then(r => r.text()).catch(() => "");
+
+  const directTitle = extractTitleFromHtml(direct);
+  if (directTitle && !/error page|robot|security|access denied/i.test(directTitle)) {
+    return directTitle;
+  }
+
+  // 2) Fallback: fetch via Jina proxy
+  const itemId = extractItemId(listingUrl) || "";
+  if (!itemId) return "";
+
+  const jinaUrl = `https://r.jina.ai/https://www.ebay.com/itm/${itemId}`;
+  const proxied = await fetch(jinaUrl).then(r => r.text()).catch(() => "");
+
+  const proxiedTitle = extractTitleFromHtml(proxied);
+  if (proxiedTitle && !/error page|robot|security|access denied/i.test(proxiedTitle)) {
+    return proxiedTitle;
+  }
+
+  return "";
+}
+
+
+
+
+function median(nums) {
+  const arr = [...nums].sort((a, b) => a - b);
+  if (!arr.length) return 0;
+  const mid = Math.floor(arr.length / 2);
+  return arr.length % 2 ? arr[mid] : (arr[mid - 1] + arr[mid]) / 2;
+}
+
+function extractTitleFromHtml(html) {
+  if (!html) return "";
+
+  const og = html.match(/property=["']og:title["']\s+content=["']([^"']+)["']/i);
+  if (og?.[1]) return cleanTitle(og[1]);
+
+  const tt = html.match(/<title>\s*([^<]+)\s*<\/title>/i);
+  if (tt?.[1]) return cleanTitle(tt[1]);
+
+  const line = html.match(/^\s*Title:\s*(.+)\s*$/mi);
+  if (line?.[1]) return cleanTitle(line[1]);
+
+  return "";
+}
+
+function confidenceFromComps(n) {
+  if (n >= 20) return "HIGH";
+  if (n >= 10) return "MED";
+  if (n >= 5) return "LOW";
+  return "THIN";
+}
+
+app.post("/teaser", async (req, res) => {
+  try {
+    const { listingUrl, buyPrice } = req.body;
+
+    if (!listingUrl) {
+      return res.status(400).json({ error: "Missing listingUrl" });
+    }
+
+    const APP_ID = process.env.EBAY_APP_ID;
+    if (!APP_ID) {
+      return res.status(500).json({ error: "Missing EBAY_APP_ID in .env" });
+    }
+
+    const raw = String(listingUrl).trim();
+
+    // Accept digits-only item ID
+    const itemId = /^\d{12,14}$/.test(raw) ? raw : extractItemId(raw);
+
+    if (!itemId) {
+      return res.status(400).json({
+        error:
+          "Could not find Item ID. Paste a full eBay URL that contains /itm/ + 12–14 digits, or paste the digits only.",
+        received: raw,
+      });
+    }
+
+    const buy = parseFloat(String(buyPrice ?? "").replace(/[^\d.]/g, "")) || 0;
+    if (!buy || buy <= 0) {
+      return res.status(400).json({ error: "Invalid buyPrice" });
+    }
+
+    const canonicalUrl = `https://www.ebay.com/itm/${itemId}`;
+
+    // ✅ Get title from the listing HTML (no OAuth required)
+    const title = await fetchTitleFromListingHtml(canonicalUrl);
+
+if (!title) {
+  console.log("❌ TITLE WAS EMPTY");
+  return res.status(404).json({
+    error:
+      "Could not read title from listing page (ended listing or blocked page). Try a different LIVE item link.",
+    itemId,
+  });
+}
+
+console.log("🧠 TITLE FOUND:", title);
+
+// Sold comps via Finding API (appid-only)
+const keywords = cleanTitle(title)
+  .replace(/&quot;/g, '"')
+  .replace(/\(.*?\)/g, " ")
+  .replace(/\s+/g, " ")
+  .trim();
+
+const findingParams = new URLSearchParams({
+  "OPERATION-NAME": "findCompletedItems",
+  "SERVICE-VERSION": "1.13.0",
+  "SECURITY-APPNAME": APP_ID,
+  "GLOBAL-ID": "EBAY-US",
+  "RESPONSE-DATA-FORMAT": "JSON",
+  "REST-PAYLOAD": "true",
+
+  "keywords": keywords,
+
+  "itemFilter(0).name": "SoldItemsOnly",
+  "itemFilter(0).value": "true",
+
+  "itemFilter(1).name": "LocatedIn",
+  "itemFilter(1).value": "US",
+
+  "paginationInput.entriesPerPage": "50",
+  "sortOrder": "EndTimeSoonest"
+});
+
+const findingUrl = `https://svcs.ebay.com/services/search/FindingService/v1?${findingParams.toString()}`;
+const soldRes = await fetch(findingUrl);
+
+const soldText = await soldRes.text();
+let soldData = {};
+try { soldData = JSON.parse(soldText); } catch(e) { soldData = { _raw: soldText }; }
+
+// useful debug
+const ack = soldData?.findCompletedItemsResponse?.[0]?.ack?.[0];
+const errMsg = soldData?.findCompletedItemsResponse?.[0]?.errorMessage?.[0]?.error?.[0]?.message?.[0];
+const countStr = soldData?.findCompletedItemsResponse?.[0]?.searchResult?.[0]?.["@count"];
+console.log("FINDING:", { ack, count: countStr, errMsg });
+
+const items =
+  soldData?.findCompletedItemsResponse?.[0]?.searchResult?.[0]?.item || [];
+
+const prices = items
+  .map((it) =>
+    parseFloat(it?.sellingStatus?.[0]?.convertedCurrentPrice?.[0]?.__value__)
+  )
+  .filter((n) => Number.isFinite(n) && n > 0);
+
+const compsCount = prices.length;
+const marketPrice = median(prices);
+const marginPct = buy > 0 ? ((marketPrice - buy) / buy) * 100 : 0;
+
+const verdict = marginPct >= 10 ? "PASS" : "FAIL";
+const confidence = confidenceFromComps(compsCount);
+
+
+
+
+
+  return res.status(502).json({
+    error: "Finding returned non-JSON (blocked or error page)",
+    status: soldRes.status,
+    sample: soldText.slice(0, 400),
+  });
+}
+ 
+  
+    const items =
+      soldData?.findCompletedItemsResponse?.[0]?.searchResult?.[0]?.item || [];
+
+    const prices = items
+      .map((it) =>
+        parseFloat(it?.sellingStatus?.[0]?.convertedCurrentPrice?.[0]?.__value__)
+      )
+      .filter((n) => Number.isFinite(n) && n > 0);
+
+    const compsCount = prices.length;
+    const marketPrice = median(prices);
+    const marginPct = buy > 0 ? ((marketPrice - buy) / buy) * 100 : 0;
+
+    const verdict = marginPct >= 10 ? "PASS" : "FAIL";
+    const confidence = confidenceFromComps(compsCount);
+
+    return res.json({
+      ok: true,
+      verdict,
+      confidence,
+      marketPrice: Math.round(marketPrice),
+      buyPrice: buy,
+      marginPct: Math.round(marginPct),
+      title,
+      itemId,
+      compsCount,
+    });
+  } catch (e) {
+    return res.status(500).json({ error: `Garnett Error: ${e.message}` });
+  }
+});
+
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`✅ Garnett Teaser API running on ${PORT}`);
+});

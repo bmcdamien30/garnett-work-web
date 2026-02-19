@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GarnettWork — Verify with Confidence</title>
+  <style>
+:root{
+  --bg:#07070a;
+  --panel:#111118;
+  --panel2:#161622;
+  --text:#f3f3f5;
+  --muted:#b6b6bf;
+  --gold:#d4a84a;
+  --gold2:#ffd070;
+  --border:rgba(255,255,255,.10);
+}
+*{box-sizing:border-boxhtml,body{height:100%}
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: radial-gradient(900px 900px at 85% 10%, rgba(212,168,74,.20), transparent 60%),
+              radial-gradient(600px 600px at 15% 30%, rgba(255,208,112,.10), transparent 55%),
+              var(--bg);
+  color:var(--text);
+}
+a{color:inherit}
+.container{max-width:1080px;margin:0 auto;padding:28px 20px 80px}
+.nav{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:10px 0 18px;
+}
+.brand{display:flex;align-items:center;gap:14px}
+.brand img{height:44px;width:auto}
+.badge{
+  font-size:12px;color:var(--gold2);
+  border:1px solid rgba(255,208,112,.28);
+  padding:6px 10px;border-radius:999px;
+  background:rgba(255,208,112,.06);
+}
+.hero{
+  display:grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap:28px;
+  align-items:start;
+  padding:18px 0 10px;
+}
+h1{
+  margin:0 0 10px;
+  font-size: clamp(34px, 4.5vw, 54px);
+  line-height:1.05;
+  letter-spacing:-.02em;
+}
+.sub{
+  margin:0 0 18px;
+  font-size: clamp(16px, 1.6vw, 20px);
+  line-height:1.45;
+  color:var(--muted);
+}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:12px 16px;border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+  background:transparent;
+  text-decoration:none;
+  font-weight:700;
+  cursor:pointer;
+}
+.btn.primary{
+  background: linear-gradient(135deg, var(--gold2), var(--gold));
+  color:#0f0f14;
+  border-color:rgba(255,208,112,.55);
+  box-shadow: 0 12px 28px rgba(212,168,74,.15);
+}
+.btn.ghost{color:var(--gold2);border-color:rgba(255,208,112,.35)}
+.smallnote{margin-top:10px;color:rgba(182,182,191,.85);font-size:13px}
+.card{
+  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:18px;
+  box-shadow: 0 14px 36px rgba(0,0,0,.35);
+  backdrop-filter: blur(8px);
+}
+.card h2{margin:0 0 6px;font-size:18px;letter-spacing:.02em}
+.card p{margin:0 0 14px;color:var(--muted);font-size:14px;line-height:1.4}
+.form{display:grid;gap:12px;}
+.field label{
+  display:block;
+  font-size:12px;
+  letter-spacing:.08em;
+  color:rgba(255,208,112,.95);
+  font-weight:800;
+  margin:0 0 8px;
+}
+.input, select{
+  width:100%;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(18,18,28,.9);
+  color:var(--text);
+  padding:14px 14px;
+  outline:none;
+  font-size:15px;
+}
+.input::placeholder{color:rgba(182,182,191,.65)}
+.form .row{display:grid;grid-template-columns: 1fr 1fr;gap:12px}
+.result{
+  margin-top:14px;
+  padding:14px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(10,10,14,.65);
+  display:none;
+}
+.result .kicker{
+  font-size:12px;color:rgba(182,182,191,.85);letter-spacing:.08em;font-weight:800;
+}
+.result .headline{
+  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin-top:6px;
+}
+.pill{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 12px;border-radius:999px;font-weight:900;letter-spacing:.06em;font-size:12px;
+  border:1px solid rgba(255,255,255,.14);
+}
+.pill.pass{background:rgba(50,215,75,.10);border-color:rgba(50,215,75,.35);color:#a9f5b7}
+.pill.fail{background:rgba(255,69,58,.10);border-color:rgba(255,69,58,.35);color:#ffb2ad}
+.pill.refuse{background:rgba(255,208,112,.10);border-color:rgba(255,208,112,.35);color:#ffe1a6}
+.metrics{margin-top:10px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.metric{padding:10px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+.metric .t{font-size:12px;color:rgba(182,182,191,.8);font-weight:800;letter-spacing:.06em}
+.metric .v{margin-top:6px;font-size:18px;font-weight:900;color:var(--text)}
+.section{margin-top:34px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.kv{
+  padding:16px;border-radius:20px;border:1px solid rgba(255,255,255,.10);
+  background: rgba(17,17,24,.65);
+}
+.kv h3{margin:0 0 6px;font-size:16px}
+.kv p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}
+.pricing{
+  margin-top:18px;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+.tier{
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(12,12,16,.55);
+  border-radius:20px;
+  padding:16px;
+}
+.tier .name{font-weight:900;letter-spacing:.06em}
+.tier .price{margin-top:6px;font-size:22px;font-weight:900;color:var(--gold2)}
+.tier .desc{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.45}
+.footer{
+  margin-top:60px;
+  padding-top:18px;
+  border-top:1px solid rgba(255,255,255,.08);
+  color:rgba(182,182,191,.85);
+  font-size:13px;
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;
+}
+@media (max-width: 880px){
+  .hero{grid-template-columns:1fr}
+  .pricing{grid-template-columns:1fr}
+  .grid2{grid-template-columns:1fr}
+  .form .row{grid-template-columns:1fr}
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav">
+      <div class="brand">
+        <img src="logo.png" alt="Garnett Work" />
+        <div class="badge">Payment never changes truth</div>
+      </div>
+      <a class="btn ghost" href="#pricing">Pricing</a>
+    </div>
+
+    <div class="hero">
+      <div>
+        <h1>Verify with Confidence.</h1>
+        <p class="sub">
+          Garnett Work helps you stop guessing. Paste a listing link and your buy price to get a free Pass/Fail teaser.
+          Unlock the Truth Packet when it matters: comps, math, rules fired, and a decision receipt.
+        </p>
+        <div class="ctas">
+          <a class="btn primary" href="#run">Run Free Teaser</a>
+          <a class="btn ghost" href="#how">How it works</a>
+        </div>
+        <div class="smallnote">Soft launch ready. Built for speed, trust, and repeatable decisions.</div>
+      </div>
+
+      <div class="card" id="run">
+        <h2>Run Garnett</h2>
+        <p>Paste an eBay link (big URL is fine) OR paste the 12-digit Item ID.</p>
+
+        <form class="form" id="teaserForm">
+          <div class="field">
+            <label>LISTING URL OR ITEM ID</label>
+            <input class="input" id="listingInput" placeholder="https://www.ebay.com/itm/406698481540  or  406698481540" required />
+            <div class="smallnote">Tip: best link contains <b>/itm/</b> + a <b>12-digit</b> item number.</div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>BUY PRICE</label>
+              <input class="input" id="buyPrice" placeholder="850" required />
+            </div>
+
+            <div class="field">
+              <label>CONDITION</label>
+              <select id="condition">
+                <option value="unknown">Unknown</option>
+                <option value="new">New</option>
+                <option value="open_box">Open Box</option>
+                <option value="used" selected>Used</option>
+                <option value="parts">For Parts</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="btn primary" type="submit" id="runBtn">Get Teaser Verdict (Free)</button>
+
+          <div class="smallnote" id="errorLine" style="display:none;color:#ffb2ad;"></div>
+
+          <div class="result" id="resultBox">
+            <div class="kicker">TEASER RESULT</div>
+            <div class="headline">
+              <span class="pill" id="verdictPill">—</span>
+              <div style="font-weight:900;font-size:18px" id="resultTitle">—</div>
+            </div>
+
+            <div class="metrics">
+              <div class="metric">
+                <div class="t">Market</div>
+                <div class="v" id="mMarket">—</div>
+              </div>
+              <div class="metric">
+                <div class="t">Buy</div>
+                <div class="v" id="mBuy">—</div>
+              </div>
+              <div class="metric">
+                <div class="t">Margin</div>
+                <div class="v" id="mMargin">—</div>
+              </div>
+            </div>
+
+            <div class="smallnote" id="whyLine" style="margin-top:10px;">—</div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="section" id="how">
+      <div class="grid2">
+        <div class="kv">
+          <h3>Free Teaser</h3>
+          <p>Instant PASS/FAIL + headline numbers. No sensitive details. Fast triage.</p>
+        </div>
+        <div class="kv">
+          <h3>Truth Packet (Paid)</h3>
+          <p>Comps, fee math, rules fired, and a decision receipt. Proof you can trust.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="pricing">
+      <h2 style="margin:0 0 6px;">Pricing</h2>
+      <p style="margin:0;color:rgba(182,182,191,.88);">Keep it low, gain customers first. Teaser is free. Unlock only when it matters.</p>
+
+      <div class="pricing">
+        <div class="tier">
+          <div class="name">Free Teaser</div>
+          <div class="price">FREE</div>
+          <div class="desc">Unlimited basic verdicts + headline numbers.</div>
+        </div>
+        <div class="tier">
+          <div class="name">Single Unlock</div>
+          <div class="price">$0.25</div>
+          <div class="desc">Unlock one full Truth Packet (comps, math, rules fired, receipt).</div>
+        </div>
+        <div class="tier">
+          <div class="name">Starter</div>
+          <div class="price">$10/mo</div>
+          <div class="desc">50 unlocks included. $0.20 each extra. Saved history.</div>
+        </div>
+      </div>
+
+      <div class="smallnote" style="margin-top:10px;">Pro/Team/Enterprise tiers can be added after repeat users exist.</div>
+    </div>
+
+    <div class="footer">
+      <div>© <span id="year"></span> Garnett Work</div>
+      <div>Truth decides. Payment only unlocks detail.</div>
+    </div>
+  </div>
+
+  <script>
+    // ✅ YOUR CLOUD RUN ENDPOINT:
+    const API_URL = "https://garnett-teaser-204821439481.us-central1.run.app/teaser";
+
+    const year = document.getElementById("year");
+    year.textContent = new Date().getFullYear();
+
+    const form = document.getElementById("teaserForm");
+    const listingInput = document.getElementById("listingInput");
+    const buyPriceInput = document.getElementById("buyPrice");
+    const conditionSelect = document.getElementById("condition");
+    const runBtn = document.getElementById("runBtn");
+
+    const errorLine = document.getElementById("errorLine");
+    const resultBox = document.getElementById("resultBox");
+    const verdictPill = document.getElementById("verdictPill");
+    const resultTitle = document.getElementById("resultTitle");
+    const mMarket = document.getElementById("mMarket");
+    const mBuy = document.getElementById("mBuy");
+    const mMargin = document.getElementById("mMargin");
+    const whyLine = document.getElementById("whyLine");
+
+    function showError(msg){
+      errorLine.textContent = msg;
+      errorLine.style.display = "block";
+    }
+    function clearError(){
+      errorLine.textContent = "";
+      errorLine.style.display = "none";
+    }
+    function money(n){
+      const x = Number(n);
+      if (!Number.isFinite(x)) return "—";
+      return x.toLocaleString(undefined, { style:"currency", currency:"USD" });
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearError();
+      resultBox.style.display = "none";
+
+      const listingUrl = (listingInput.value || "").trim();
+      const buyPrice = (buyPriceInput.value || "").trim();
+      const condition = conditionSelect.value;
+
+      if (!listingUrl) return showError("Paste an eBay link or Item ID.");
+      if (!buyPrice) return showError("Enter a buy price.");
+
+      runBtn.disabled = true;
+      runBtn.textContent = "Running…";
+
+      try {
+        const resp = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ listingUrl, buyPrice, condition })
+        });
+
+        const data = await resp.json();
+
+        if (!resp.ok) {
+          return showError(data?.error || "Request failed.");
+        }
+
+        resultBox.style.display = "block";
+
+        const v = data.verdict || "—";
+        verdictPill.textContent = v;
+
+        if (v === "PASS") verdictPill.className = "pill pass";
+        else if (v === "FAIL") verdictPill.className = "pill fail";
+        else verdictPill.className = "pill refuse";
+
+        resultTitle.textContent = data.title || "—";
+        mMarket.textContent = data.marketPrice != null ? money(data.marketPrice) : "—";
+        mBuy.textContent = money(Number(String(buyPrice).replace(/[^\d.]/g, "")));
+        mMargin.textContent = data.marginPct != null ? `${data.marginPct}%` : "—";
+        whyLine.textContent = data.why || "";
+      } catch (err) {
+        showError("Server error. Check endpoint or CORS.");
+      } finally {
+        runBtn.disabled = false;
+        runBtn.textContent = "Get Teaser Verdict (Free)";
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+

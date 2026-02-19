@@ -1,0 +1,168 @@
+import express from "express";
+import fetch from "node-fetch";
+import dotenv from "dotenv";
+import cors from "cors";
+
+console.log("🔥 CLEAN INDEX.JS LOADED 🔥");
+
+dotenv.config();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.status(200).send("Garnett Teaser API OK");
+});
+
+function extractItemId(text) {
+  const s = String(text || "");
+  const m1 = s.match(/\/itm\/(\d{12,14})/i);
+  if (m1) return m1[1];
+
+  const m2 = s.match(/(\d{12,14})/);
+  return m2 ? m2[1] : null;
+}
+
+function cleanTitle(t) {
+  if (!t) return "";
+  return String(t)
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .replace(/\s*[\|\-]\s*eBay\s*$/i, "")
+    .trim();
+}
+
+async function fetchTitle(listingUrl) {
+  const resp = await fetch(listingUrl, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+      "Accept-Language": "en-US,en;q=0.9",
+    },
+  });
+
+  const html = await resp.text();
+
+  const og = html.match(/property=["']og:title["']\s+content=["']([^"']+)["']/i);
+  if (og?.[1]) return cleanTitle(og[1]);
+
+  const tt = html.match(/<title>\s*([^<]+)\s*<\/title>/i);
+  if (tt?.[1]) return cleanTitle(tt[1]);
+
+  return "";
+}
+
+function median(nums) {
+  if (!nums.length) return 0;
+  const sorted = [...nums].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2
+    ? sorted[mid]
+    : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+function confidence(n) {
+  if (n >= 20) return "HIGH";
+  if (n >= 10) return "MED";
+  if (n >= 5) return "LOW";
+  return "THIN";
+}
+
+app.post("/teaser", async (req, res) => {
+  try {
+    const { listingUrl, buyPrice } = req.body;
+
+    if (!listingUrl)
+      return res.status(400).json({ error: "Missing listingUrl" });
+
+    if (!process.env.EBAY_APP_ID)
+      return res.status(500).json({ error: "Missing EBAY_APP_ID" });
+
+    const itemId = extractItemId(listingUrl);
+    if (!itemId)
+      return res.status(400).json({ error: "Invalid eBay URL" });
+
+    const buy = parseFloat(buyPrice);
+    if (!buy || buy <= 0)
+      return res.status(400).json({ error: "Invalid buyPrice" });
+
+    const canonicalUrl = `https://www.ebay.com/itm/${itemId}`;
+    const title = await fetchTitle(canonicalUrl);
+
+    if (!title)
+      return res.status(404).json({ error: "Could not read title", itemId });
+
+    const findingParams = new URLSearchParams({
+      "OPERATION-NAME": "findCompletedItems",
+      "SERVICE-VERSION": "1.13.0",
+      "SECURITY-APPNAME": process.env.EBAY_APP_ID,
+      "RESPONSE-DATA-FORMAT": "JSON",
+      "REST-PAYLOAD": "true",
+      "keywords": title
+      .replace(/\(.*?\)/g, "")
+      .replace(/[^a-zA-Z0-9\s]/g, "")
+      .trim(),
+      "itemFilter(0).name": "SoldItemsOnly",
+      "itemFilter(0).value": "true",
+      "paginationInput.entriesPerPage": "25",
+    });
+
+    const findingUrl = `https://svcs.ebay.com/services/search/FindingService/v1?${findingParams.toString()}`;
+
+console.log("FINDING URL:", findingUrl);
+
+const soldRes = await fetch(findingUrl, {
+  headers: {
+    "User-Agent": "Mozilla/5.0",
+    "Accept-Language": "en-US,en;q=0.9"
+  }
+});
+
+console.log("FINDING STATUS:", soldRes.status);
+
+const soldText = await soldRes.text();
+console.log("FINDING BODY (first 300):", soldText.slice(0, 300));
+
+let soldData;
+try { soldData = JSON.parse(soldText); }
+catch (e) { soldData = { _raw: soldText }; }
+    const soldData = await soldRes.json();
+
+    const items =
+      soldData?.findCompletedItemsResponse?.[0]?.searchResult?.[0]?.item || [];
+
+    const prices = items
+      .map((it) =>
+        parseFloat(it?.sellingStatus?.[0]?.convertedCurrentPrice?.[0]?.__value__)
+      )
+      .filter((n) => Number.isFinite(n) && n > 0);
+
+    const compsCount = prices.length;
+    const marketPrice = median(prices);
+    const marginPct = ((marketPrice - buy) / buy) * 100;
+
+    const verdict = marginPct >= 10 ? "PASS" : "FAIL";
+
+    return res.json({
+      ok: true,
+      verdict,
+      confidence: confidence(compsCount),
+      marketPrice: Math.round(marketPrice),
+      buyPrice: buy,
+      marginPct: Math.round(marginPct),
+      title,
+      itemId,
+      compsCount,
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`✅ Garnett Teaser API running on ${PORT}`);
+});
