@@ -221,24 +221,46 @@ async function callFinding(APP_ID, keywords) {
   });
 
   const url = `https://svcs.ebay.com/services/search/FindingService/v1?${findingParams.toString()}`;
-  const resp = await throttledEbayFetch(url, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
-    },
-  });
-
-  const text = await resp.text();
-
-  // rate limit / blocks often return HTML or non-json
-  let data;
   try {
-    data = JSON.parse(text);
-  } catch {
-    data = { _raw: text.slice(0, 500) };
-  }
+    const resp = await throttledEbayFetch(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+      },
+    });
 
-  return { url, status: resp.status, data, rawFirst300: text.slice(0, 300) };
+    const text = await resp.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      return {
+        status: 0,
+        text: "",
+        data: null,
+        error: e?.message || "Failed to parse Finding API response",
+        url,
+        rawFirst300: "",
+      };
+    }
+
+    return {
+      status: Number(resp.status) || 0,
+      text,
+      data,
+      url,
+      rawFirst300: String(text || "").slice(0, 300),
+    };
+  } catch (e) {
+    return {
+      status: 0,
+      text: "",
+      data: null,
+      error: e?.message || String(e),
+      url,
+      rawFirst300: "",
+    };
+  }
 }
 
 app.post("/teaser", async (req, res) => {
@@ -384,6 +406,18 @@ app.post("/teaser", async (req, res) => {
         const fetched = await callFinding(APP_ID, keywords);
         cacheSet(findingCacheKey, fetched, 2 * 60 * 1000);
         return fetched;
+      });
+    }
+
+    if (!finding || typeof finding.status !== "number") {
+      return res.status(502).json({
+        ok: false,
+        reason: "FINDING_ERROR",
+        error: "Finding API returned no usable response",
+        debug: {
+          titleSource,
+          findingError: finding?.error ?? "null finding",
+        },
       });
     }
 
