@@ -243,7 +243,8 @@ async function callFinding(APP_ID, keywords) {
 
 app.post("/teaser", async (req, res) => {
   try {
-    const { listingUrl, buyPrice, condition } = req.body;
+    const { listingUrl, buyPrice, condition, title: bodyTitle, keywords: bodyKeywords } =
+      req.body;
     const cacheBypassed = Object.prototype.hasOwnProperty.call(req.query || {}, "cb");
 
     const APP_ID = process.env.EBAY_APP_ID;
@@ -333,28 +334,45 @@ app.post("/teaser", async (req, res) => {
       }
     }
 
-    // title cache
-    const titleCacheKey = `title:${itemId}`;
-    let title = cacheGet(titleCacheKey);
-    if (title === undefined) {
-      title = await getOrCreateInFlight(titleCacheKey, async () => {
-        const cached = cacheGet(titleCacheKey);
-        if (cached !== undefined) return cached;
-        const fetched = await fetchTitleFromListingHtml(canonicalUrl);
-        cacheSet(titleCacheKey, fetched || "", 10 * 60 * 1000);
-        return fetched;
-      });
-    }
+    const providedKeywords = String(bodyKeywords || "").trim();
+    const providedTitle = String(bodyTitle || "").trim();
+    let title = "";
+    let keywords = "";
+    let titleSource = "";
 
-    if (!title) {
-      return res.status(404).json({
-        error:
-          "Could not read title from listing page (ended listing or blocked page). Try a different LIVE item link.",
-        itemId,
-      });
-    }
+    if (providedKeywords) {
+      keywords = providedKeywords;
+      title = providedTitle;
+      titleSource = "keywords";
+    } else if (providedTitle) {
+      title = providedTitle;
+      keywords = normalizeKeywords(title);
+      titleSource = "title";
+    } else {
+      // title cache
+      const titleCacheKey = `title:${itemId}`;
+      title = cacheGet(titleCacheKey);
+      if (title === undefined) {
+        title = await getOrCreateInFlight(titleCacheKey, async () => {
+          const cached = cacheGet(titleCacheKey);
+          if (cached !== undefined) return cached;
+          const fetched = await fetchTitleFromListingHtml(canonicalUrl);
+          cacheSet(titleCacheKey, fetched || "", 10 * 60 * 1000);
+          return fetched;
+        });
+      }
 
-    const keywords = normalizeKeywords(title);
+      if (!title) {
+        return res.status(404).json({
+          error:
+            "Could not read title from listing page (ended listing or blocked page). Try a different LIVE item link.",
+          itemId,
+        });
+      }
+
+      keywords = normalizeKeywords(title);
+      titleSource = "html";
+    }
 
     // Finding cache (same keywords often repeated)
     const findingCacheKey = `finding:${keywords}`;
@@ -394,6 +412,7 @@ app.post("/teaser", async (req, res) => {
             findingStatus: finding.status,
             findingUrl: finding.url,
             findingBodyFirst300: finding.rawFirst300,
+            titleSource,
           },
         },
         {
@@ -435,6 +454,7 @@ app.post("/teaser", async (req, res) => {
         findingStatus: finding.status,
         findingUrl: finding.url,
         findingBodyFirst300: finding.rawFirst300,
+        titleSource,
       },
     };
 
