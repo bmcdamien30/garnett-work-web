@@ -235,12 +235,12 @@ async function callFinding(APP_ID, keywords) {
       data = JSON.parse(text);
     } catch (e) {
       return {
-        status: 0,
-        text: "",
+        status: Number(resp.status) || 0,
+        text,
         data: null,
-        error: e?.message || "Failed to parse Finding API response",
+        error: String(e),
         url,
-        rawFirst300: "",
+        rawFirst300: String(text || "").slice(0, 300),
       };
     }
 
@@ -256,7 +256,7 @@ async function callFinding(APP_ID, keywords) {
       status: 0,
       text: "",
       data: null,
-      error: e?.message || String(e),
+      error: String(e),
       url,
       rawFirst300: "",
     };
@@ -399,12 +399,15 @@ app.post("/teaser", async (req, res) => {
     // Finding cache (same keywords often repeated)
     const findingCacheKey = `finding:${keywords}`;
     let finding = cacheGet(findingCacheKey);
+    if (finding === null) finding = undefined;
     if (finding === undefined) {
       finding = await getOrCreateInFlight(findingCacheKey, async () => {
         const cached = cacheGet(findingCacheKey);
-        if (cached !== undefined) return cached;
+        if (cached !== undefined && cached !== null) return cached;
         const fetched = await callFinding(APP_ID, keywords);
-        cacheSet(findingCacheKey, fetched, 2 * 60 * 1000);
+        if (fetched !== undefined && fetched !== null) {
+          cacheSet(findingCacheKey, fetched, 2 * 60 * 1000);
+        }
         return fetched;
       });
     }
@@ -417,6 +420,9 @@ app.post("/teaser", async (req, res) => {
         debug: {
           titleSource,
           findingError: finding?.error ?? "null finding",
+          findingType: typeof finding,
+          findingIsNull: finding === null,
+          findingHasStatus: !!(finding && typeof finding.status === "number"),
         },
       });
     }
