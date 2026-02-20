@@ -314,7 +314,7 @@ app.post("/teaser", async (req, res) => {
       .trim();
     const vipIps = new Set(
       String(process.env.GARNETT_VIP_IPS || "")
-        .split(",")
+        .split(/[,\|]/)
         .map((s) => s.trim())
         .filter(Boolean)
     );
