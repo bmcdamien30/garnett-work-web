@@ -16,6 +16,40 @@ app.get("/", (req, res) => res.status(200).send("Garnett Teaser API OK"));
 const FINDING_COOLDOWN_MS = 3500;
 let lastFindingCallAt = 0;
 let cooldownUntilMs = 0;
+const EBAY_MIN_CALL_GAP_MS = 2000;
+let lastEbayCallAt = 0;
+let ebayCallQueue = Promise.resolve();
+const IN_FLIGHT_BY_CACHE_KEY = new Map();
+
+function throttledEbayFetch(url, options) {
+  const run = async () => {
+    const now = Date.now();
+    const since = now - lastEbayCallAt;
+    if (since < EBAY_MIN_CALL_GAP_MS) {
+      await new Promise((r) => setTimeout(r, EBAY_MIN_CALL_GAP_MS - since));
+    }
+    lastEbayCallAt = Date.now();
+    return fetch(url, options);
+  };
+  const result = ebayCallQueue.then(run, run);
+  ebayCallQueue = result.then(
+    () => undefined,
+    () => undefined
+  );
+  return result;
+}
+
+function getOrCreateInFlight(cacheKey, factory) {
+  const existing = IN_FLIGHT_BY_CACHE_KEY.get(cacheKey);
+  if (existing) return existing;
+  const created = Promise.resolve()
+    .then(factory)
+    .finally(() => {
+      IN_FLIGHT_BY_CACHE_KEY.delete(cacheKey);
+    });
+  IN_FLIGHT_BY_CACHE_KEY.set(cacheKey, created);
+  return created;
+}
 
 // tiny in-memory cache so we don't hammer Finding API
 const CACHE = new Map();
@@ -121,7 +155,7 @@ function extractTitleFromHtml(html) {
 }
 
 async function fetchTitleFromListingHtml(listingUrl) {
-  const html = await fetch(listingUrl, {
+  const html = await throttledEbayFetch(listingUrl, {
     headers: {
       "User-Agent":
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
@@ -187,7 +221,7 @@ async function callFinding(APP_ID, keywords) {
   });
 
   const url = `https://svcs.ebay.com/services/search/FindingService/v1?${findingParams.toString()}`;
-  const resp = await fetch(url, {
+  const resp = await throttledEbayFetch(url, {
     headers: {
       "User-Agent":
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
@@ -302,9 +336,14 @@ app.post("/teaser", async (req, res) => {
     // title cache
     const titleCacheKey = `title:${itemId}`;
     let title = cacheGet(titleCacheKey);
-    if (!title) {
-      title = await fetchTitleFromListingHtml(canonicalUrl);
-      cacheSet(titleCacheKey, title || "", 10 * 60 * 1000);
+    if (title === undefined) {
+      title = await getOrCreateInFlight(titleCacheKey, async () => {
+        const cached = cacheGet(titleCacheKey);
+        if (cached !== undefined) return cached;
+        const fetched = await fetchTitleFromListingHtml(canonicalUrl);
+        cacheSet(titleCacheKey, fetched || "", 10 * 60 * 1000);
+        return fetched;
+      });
     }
 
     if (!title) {
@@ -320,9 +359,14 @@ app.post("/teaser", async (req, res) => {
     // Finding cache (same keywords often repeated)
     const findingCacheKey = `finding:${keywords}`;
     let finding = cacheGet(findingCacheKey);
-    if (!finding) {
-      finding = await callFinding(APP_ID, keywords);
-      cacheSet(findingCacheKey, finding, 2 * 60 * 1000);
+    if (finding === undefined) {
+      finding = await getOrCreateInFlight(findingCacheKey, async () => {
+        const cached = cacheGet(findingCacheKey);
+        if (cached !== undefined) return cached;
+        const fetched = await callFinding(APP_ID, keywords);
+        cacheSet(findingCacheKey, fetched, 2 * 60 * 1000);
+        return fetched;
+      });
     }
 
     if (isFindingRateLimited(finding)) {
