@@ -20,6 +20,25 @@ const EBAY_MIN_CALL_GAP_MS = 2000;
 let lastEbayCallAt = 0;
 let ebayCallQueue = Promise.resolve();
 const IN_FLIGHT_BY_CACHE_KEY = new Map();
+const DEFAULT_DAILY_LIMIT = 10;
+const VIP_DAILY_LIMIT = 50;
+// Simple daily counter per IP, reset by local calendar day (local midnight boundary).
+const DAILY_USAGE_BY_IP = new Map();
+
+function localDayKey(ts = Date.now()) {
+  const d = new Date(ts);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function secondsUntilNextLocalMidnight(ts = Date.now()) {
+  const now = new Date(ts);
+  const next = new Date(ts);
+  next.setHours(24, 0, 0, 0);
+  return Math.max(0, Math.ceil((next.getTime() - now.getTime()) / 1000));
+}
 
 function throttledEbayFetch(url, options) {
   const run = async () => {
@@ -290,6 +309,42 @@ app.post("/teaser", async (req, res) => {
     const canonicalUrl = `https://www.ebay.com/itm/${itemId}`;
     const canonicalCondition = String(condition || "unknown").trim().toLowerCase();
     const canonicalQuery = `${canonicalUrl}|buy:${buy.toFixed(2)}|condition:${canonicalCondition}`;
+    const clientIp = String(req.ip || req.socket?.remoteAddress || "unknown")
+      .split(",")[0]
+      .trim();
+    const vipIps = new Set(
+      String(process.env.GARNETT_VIP_IPS || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+    );
+    const isVip = vipIps.has(clientIp);
+    const dailyLimit = isVip ? VIP_DAILY_LIMIT : DEFAULT_DAILY_LIMIT;
+    const dayKey = localDayKey();
+    const usage = DAILY_USAGE_BY_IP.get(clientIp);
+    if (!usage || usage.dayKey !== dayKey) {
+      DAILY_USAGE_BY_IP.set(clientIp, { dayKey, count: 0 });
+    }
+    const usageNow = DAILY_USAGE_BY_IP.get(clientIp);
+    if (usageNow.count >= dailyLimit) {
+      const retryAfterSec = secondsUntilNextLocalMidnight();
+      return res.status(200).json(
+        withRuntimeDebug({
+          ok: false,
+          reason: "LIMIT_REACHED",
+          retryAfterSec,
+          error: "Usage limit reached. Try again later.",
+          debug: {
+            ip: clientIp,
+            isVip,
+            dailyLimit,
+            usedToday: usageNow.count,
+            limitWindow: "local-midnight",
+          },
+        })
+      );
+    }
+    usageNow.count += 1;
     const staleCachedTeaser = cacheBypassed ? null : teaserCacheGetAny(canonicalQuery);
     const sendRateLimited = (payload, extraDebug = {}) => {
       const cooldownRemainingSec = Math.ceil((cooldownUntilMs - Date.now()) / 1000);
