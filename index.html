@@ -531,7 +531,11 @@
   const openShortLinkBtn = document.getElementById("openShortLinkBtn");
   const resultBox = document.getElementById("resultBox");
 
-  const API_URL = "https://garnett-teaser-204821439481.us-central1.run.app/teaser";
+  const LIVE_API_URL = "https://garnett-teaser-204821439481.us-central1.run.app/teaser";
+  const LOCAL_API_URL = "http://localhost:8080/teaser";
+  const API_URL = /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname)
+    ? LOCAL_API_URL
+    : LIVE_API_URL;
 
   function parseListingInput(raw) {
     const value = String(raw || "").trim();
@@ -584,11 +588,13 @@
     resultBox.innerHTML = "Checking the market…";
 
     try {
+      console.debug("[Garnett teaser] request URL:", API_URL);
       const resp = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ listingUrl, buyPrice, condition })
       });
+      console.debug("[Garnett teaser] response status:", resp.status);
 
       const rawText = await resp.text();
       let data = null;
@@ -597,15 +603,20 @@
       } catch {
         data = null;
       }
+      console.debug("[Garnett teaser] response data:", data);
       if (!resp.ok || !data || typeof data !== "object") {
         throw new Error((data && data.error) || rawText || "Request failed");
       }
       if (data.ok === false) {
         const retryAfter = Number(data.retryAfterSec);
+        const titleSource = data?.debug?.titleSource ? `<br><span style="color:rgba(255,255,255,0.65)">titleSource: ${data.debug.titleSource}</span>` : "";
         resultBox.innerHTML = `
-          <strong>⚠️ ${data.reason || "REQUEST_BLOCKED"}</strong><br>
-          ${data.error || "Request could not be completed."}
-          ${Number.isFinite(retryAfter) && retryAfter > 0 ? `<br><span style="color:rgba(255,255,255,0.65)">Retry in ${retryAfter}s</span>` : ""}
+          <div style="display:grid;gap:6px;">
+            <strong style="font-size:16px;color:rgba(255,180,100,0.95);">⚠️ ${data.reason || "REQUEST_BLOCKED"}</strong>
+            <div>${data.error || "Request could not be completed."}</div>
+            ${Number.isFinite(retryAfter) && retryAfter > 0 ? `<span style="color:rgba(255,255,255,0.65)">Retry in ${retryAfter}s</span>` : ""}
+            ${titleSource}
+          </div>
         `;
         return;
       }
@@ -629,7 +640,8 @@
             <div><div style="font-size:11px;color:rgba(255,255,255,0.6);">Buy</div><div style="font-weight:800;">${money(data.buyPrice)}</div></div>
           </div>
           <div style="font-size:12px;color:rgba(255,255,255,0.75);">${data.title || ""}</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.6);">Item ID: ${data.itemId || "—"}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.6);">Item ID: ${data.itemId || "—"} · Condition: ${data.condition || "—"}</div>
+          ${data?.debug?.titleSource ? `<div style="font-size:11px;color:rgba(255,255,255,0.6);">titleSource: ${data.debug.titleSource}</div>` : ""}
           <details>
             <summary style="cursor:pointer;font-size:12px;color:rgba(255,255,255,0.75);">Debug</summary>
             <pre style="margin:8px 0 0;white-space:pre-wrap;word-break:break-word;font-size:11px;color:rgba(255,255,255,0.75);">${debugJson}</pre>
