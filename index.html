@@ -154,6 +154,7 @@
       gap: 10px;
       flex-wrap: wrap;
       margin: 14px 0 10px;
+      justify-content: flex-start;
     }
 
     .btn{
@@ -213,14 +214,15 @@
     .subNote{
       display: block;
       width: 100%;
-      max-width: 560px;
-      margin: 12px auto 0;
-      text-align: center;
+      max-width: none;
+      margin: 14px 0 0;
+      text-align: left;
+
+      font-size: 15px;
       font-weight: 900;
       letter-spacing: 0.7px;
       line-height: 1.15;
       position: relative;
-      color: rgba(255,255,255,0.95);
 
       background: linear-gradient(
         105deg,
@@ -239,9 +241,9 @@
       color: transparent;
 
       text-shadow:
-        0 0 10px rgba(255,215,0,0.10),
-        0 0 22px rgba(255,215,0,0.12),
-        0 0 38px rgba(255,215,0,0.08);
+        0 0 8px rgba(255,215,0,0.12),
+        0 0 18px rgba(255,215,0,0.16),
+        0 0 30px rgba(255,215,0,0.12);
 
       animation: truthShimmer 2.4s linear infinite;
     }
@@ -261,8 +263,9 @@
       }
 
       .subNote{
+        font-size: 13px;
         letter-spacing: 0.45px;
-        font-size: 12.5px;
+        margin-top: 12px;
       }
     }
    /* Center the hero logo */
