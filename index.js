@@ -421,10 +421,6 @@ app.post("/teaser", async (req, res) => {
       keywords = providedKeywords;
       title = providedTitle;
       titleSource = "keywords";
-    } else if (providedTitle) {
-      title = providedTitle;
-      keywords = normalizeKeywords(title);
-      titleSource = "title";
     } else {
       // title cache
       const titleCacheKey = `title:${itemId}`;
@@ -439,6 +435,11 @@ app.post("/teaser", async (req, res) => {
         });
       }
 
+      if (!title && providedTitle) {
+        title = providedTitle;
+        titleSource = "title";
+      }
+
       if (!title) {
         return res.status(404).json({
           error:
@@ -448,7 +449,9 @@ app.post("/teaser", async (req, res) => {
       }
 
       keywords = normalizeKeywords(title);
-      titleSource = "html";
+      if (!titleSource) {
+        titleSource = "html";
+      }
     }
 
     // Finding cache (same keywords often repeated)
