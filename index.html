@@ -101,20 +101,34 @@
       min-height: 360px;
       padding: 18px 0 0;
     }
-
     .heroLeft h1{
       margin: 8px 0 10px;
       font-size: clamp(36px, 4.2vw, 56px);
       font-weight: 900;
       letter-spacing: 0.4px;
       line-height: 0.98;
-      color: #f7f2dc;
+      background: linear-gradient(
+        105deg,
+        rgba(255,255,255,0.82) 0%,
+        rgba(255,215,0,0.72) 14%,
+        rgba(255,255,255,1.00) 26%,
+        rgba(255,231,120,0.96) 38%,
+        rgba(255,255,255,0.95) 52%,
+        rgba(255,215,0,0.78) 66%,
+        rgba(255,255,255,0.82) 80%
+      );
+      background-size: 240% 100%;
+      background-position: 200% 50%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
       text-shadow:
         0 0 8px rgba(255,215,0,0.16),
         0 0 18px rgba(255,215,0,0.18),
         0 0 34px rgba(255,180,0,0.14),
         0 2px 0 rgba(0,0,0,0.35);
       position: relative;
+      animation: heroGoldPulse 2.6s ease-in-out infinite, heroHeadlineShimmer 3.2s linear infinite;
     }
 
     .heroLeft h1::after{
@@ -135,10 +149,14 @@
       animation: heroGoldPulse 2.6s ease-in-out infinite;
       z-index: -1;
     }
-
     @keyframes heroGoldPulse {
       0%, 100% { opacity: 0.65; transform: scale(0.985); }
       50%      { opacity: 1;    transform: scale(1.015); }
+    }
+
+    @keyframes heroHeadlineShimmer {
+      0% { background-position: 220% 50%; }
+      100% { background-position: -20% 50%; }
     }
 
     .lead{
@@ -252,7 +270,6 @@
       0%   { background-position: 220% 50%; }
       100% { background-position: -30% 50%; }
     }
-
     @media (max-width: 640px){
       .heroLeft h1{
         text-shadow:
@@ -260,6 +277,7 @@
           0 0 14px rgba(255,215,0,0.16),
           0 0 24px rgba(255,180,0,0.12),
           0 2px 0 rgba(0,0,0,0.35);
+        animation: heroGoldPulse 2.6s ease-in-out infinite, heroHeadlineShimmer 3.8s linear infinite;
       }
 
       .subNote{
