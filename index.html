@@ -273,6 +273,142 @@
       transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease, border-color 140ms ease;
     }
 
+    .teaserForm{ margin: 0; }
+
+    .urlAssist{
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(12,12,16,0.72);
+    }
+    .urlAssist[hidden]{ display:none; }
+    .assistGrid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .assistLabel{
+      font-size: 10.5px;
+      font-weight: 900;
+      letter-spacing: 0.6px;
+      color: rgba(255,255,255,0.58);
+      text-transform: uppercase;
+    }
+    .assistValue{
+      font-size: 12.5px;
+      color: rgba(255,255,255,0.92);
+      word-break: break-all;
+    }
+    .assistActions{
+      margin-top: 10px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .assistBtn{
+      border: 1px solid rgba(255,215,0,0.28);
+      border-radius: 10px;
+      background: rgba(255,215,0,0.08);
+      color: rgba(255,255,255,0.90);
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+    .assistBtn[disabled]{
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    .assistHint{
+      font-size: 11.5px;
+      color: rgba(255,255,255,0.62);
+    }
+
+    .resultBox{
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(12,12,16,0.60);
+      color: rgba(255,255,255,0.90);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .resultHeader{
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .resultVerdict{
+      display:inline-flex;
+      align-items:center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 900;
+      letter-spacing: 0.4px;
+      border: 1px solid transparent;
+    }
+    .resultVerdict.pass{
+      color: #0f8f4a;
+      background: rgba(56,189,120,0.16);
+      border-color: rgba(56,189,120,0.36);
+    }
+    .resultVerdict.fail{
+      color: #cc3f49;
+      background: rgba(220,70,86,0.16);
+      border-color: rgba(220,70,86,0.36);
+    }
+    .resultVerdict.warn{
+      color: #d0ab33;
+      background: rgba(255,215,0,0.16);
+      border-color: rgba(255,215,0,0.36);
+    }
+    .resultConfidence{
+      color: rgba(255,255,255,0.76);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .resultGrid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    @media (max-width: 520px){
+      .resultGrid{ grid-template-columns: 1fr; }
+    }
+    .resultCell{
+      padding: 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .resultCellLabel{
+      display:block;
+      font-size: 10.5px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.58);
+      margin-bottom: 2px;
+    }
+    .resultCellValue{
+      font-size: 13px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.92);
+    }
+    .resultMeta{
+      color: rgba(255,255,255,0.64);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
     /* Mid cards */
     .midCards{
       display:grid;
@@ -400,18 +536,18 @@
 
     <section class="hero">
       <div class="heroLeft">
-        <h1>Verify with Confidence.</h1>
+        <h1>Verify Before You Buy</h1>
         <p class="lead">
-          Garnett Work helps you stop guessing. Paste a listing link and your buy price to get a free
-          PASS/FAIL teaser. Unlock the Truth Packet when it matters: comps, math, rules fired, and a decision receipt.
+          Garnett Work checks the live market before you commit so you can catch overpriced deals early.
+          Start with a free teaser verdict first, then unlock the full proof only when you need it.
         </p>
 
         <div class="ctaRow">
-          <a class="btn btnPrimary" href="#run">Run Free Teaser</a>
+          <a class="btn btnPrimary" href="#run">Get Free Teaser Verdict</a>
           <a class="btn btnGhost" href="#how">How it works</a>
         </div>
 
-        <div class="subNote">Soft launch ready. Built for speed, trust, and repeatable decisions.</div>
+        <div class="subNote">Hype sells. Truth pays.</div>
 
        <div class="hero-logo-wrapper">
   <img class="brandLogo" src="logo.png" alt="Garnett Work logo" />
@@ -421,62 +557,48 @@
       <div class="runCard" id="run">
         <div class="runTitle">Run Garnett</div>
         <div class="runDesc">
-          Paste a listing URL + deal details to get a free teaser verdict.
+          Paste a listing URL or item ID with deal details to get a free teaser verdict before you overpay.
         </div>
 
-        <label>LISTING URL</label>
-        <input class="input" id="listingInput" placeholder="https://www.ebay.com/itm/406698481540 or 406698481540" />
-        <div id="inlineMsg" style="display:none;margin-top:8px;color:rgba(255,215,0,0.92);font-size:12px;line-height:1.45;"></div>
-        <a
-          id="openShortLinkBtn"
-          class="btn btnGhost"
-          href="#"
-          target="_blank"
-          rel="noopener noreferrer"
-          style="display:none;margin-top:8px;width:max-content;"
-        >Open link</a>
-        <div
-          id="detectPanel"
-          style="display:none;margin-top:8px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);font-size:12px;color:rgba(255,255,255,0.82);"
-        >
-          <div>Detected Item ID: <strong id="detectedItemId">—</strong></div>
-          <div style="margin-top:4px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <span>Canonical URL: <span id="detectedCanonicalUrl">—</span></span>
-            <button id="copyCanonicalBtn" type="button" class="btn btnGhost" style="padding:6px 10px;font-size:11px;">Copy</button>
-          </div>
-          <div id="detectedWarning" style="display:none;margin-top:6px;color:rgba(255,215,0,0.92);">
-            Could not confirm an <code>/itm/</code> match. Verify this extracted ID before submitting.
-          </div>
-        </div>
+        <form id="teaser-form" class="teaserForm" novalidate>
+          <label for="listing-url">LISTING URL OR ITEM ID</label>
+          <input id="listing-url" class="input" placeholder="https://www.ebay.com/itm/... or 12-digit ID" />
 
-        <div class="row2">
-          <div>
-            <label>BUY PRICE</label>
-            <input class="input" id="buyPriceInput" placeholder="$" />
+          <div class="urlAssist" id="urlAssist" hidden>
+            <div class="assistGrid">
+              <div>
+                <div class="assistLabel">Detected Item ID</div>
+                <div class="assistValue" id="detected-item-id">-</div>
+              </div>
+              <div>
+                <div class="assistLabel">Canonical URL</div>
+                <div class="assistValue" id="canonical-url">-</div>
+              </div>
+            </div>
+            <div class="assistActions">
+              <button id="copy-canonical" class="assistBtn" type="button" disabled>Copy canonical URL</button>
+              <span id="url-assist-hint" class="assistHint">Paste a full /itm URL or a 12-digit item ID.</span>
+            </div>
           </div>
-          <div>
-            <label>CONDITION</label>
-            <select id="conditionSelect">
-              <option>Used</option>
-              <option>Open Box</option>
-              <option>New</option>
-            </select>
-          </div>
-        </div>
 
-        <details style="margin-top:10px;color:rgba(255,255,255,0.75);font-size:12px;">
-          <summary style="cursor:pointer;color:rgba(255,255,255,0.85);font-weight:800;">How to copy the right eBay link</summary>
-          <div style="margin-top:8px;line-height:1.5;">
-            Open the listing in eBay, then copy the full browser URL that contains <code>/itm/123456789012</code>.
-            You can also paste the 12-digit item ID directly.
+          <div class="row2">
+            <div>
+              <label for="buy-price">BUY PRICE</label>
+              <input id="buy-price" class="input" placeholder="$" />
+            </div>
+            <div>
+              <label for="condition">CONDITION</label>
+              <select id="condition">
+                <option>Used</option>
+                <option>Open Box</option>
+                <option>New</option>
+              </select>
+            </div>
           </div>
-        </details>
 
-        <button class="runBtn" id="runBtn" type="button">Get Teaser Verdict (Free)</button>
-        <div
-          id="resultBox"
-          style="margin-top:12px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:rgba(12,12,16,0.6);color:rgba(255,255,255,0.9);font-size:13px;"
-        >Ready.</div>
+          <button id="run-btn" class="runBtn" type="submit">Get Free Teaser Verdict</button>
+        </form>
+        <div id="teaser-result" class="resultBox" aria-live="polite">Ready.</div>
       </div>
     </section>
 
@@ -536,226 +658,327 @@
   </div>
  <script>
 (() => {
-  const originalRunBtn = document.getElementById("runBtn");
-  const cleanRunBtn = originalRunBtn.cloneNode(true);
-  originalRunBtn.replaceWith(cleanRunBtn);
+  const form = document.getElementById("teaser-form");
+  if (!form || form.dataset.bound === "true") return;
+  form.dataset.bound = "true";
 
-  const runBtn = cleanRunBtn;
-  const urlInput = document.getElementById("listingInput");
-  const priceInput = document.getElementById("buyPriceInput");
-  const conditionSelect = document.getElementById("conditionSelect");
-  const inlineMsg = document.getElementById("inlineMsg");
-  const openShortLinkBtn = document.getElementById("openShortLinkBtn");
-  const detectPanel = document.getElementById("detectPanel");
-  const detectedItemId = document.getElementById("detectedItemId");
-  const detectedCanonicalUrl = document.getElementById("detectedCanonicalUrl");
-  const detectedWarning = document.getElementById("detectedWarning");
-  const copyCanonicalBtn = document.getElementById("copyCanonicalBtn");
-  const resultBox = document.getElementById("resultBox");
+  const urlInput = document.getElementById("listing-url");
+  const priceInput = document.getElementById("buy-price");
+  const conditionSelect = document.getElementById("condition");
+  const runBtn = document.getElementById("run-btn");
+  const resultBox = document.getElementById("teaser-result");
+  const urlAssist = document.getElementById("urlAssist");
+  const detectedItemIdEl = document.getElementById("detected-item-id");
+  const canonicalUrlEl = document.getElementById("canonical-url");
+  const copyCanonicalBtn = document.getElementById("copy-canonical");
+  const urlAssistHint = document.getElementById("url-assist-hint");
 
-  const LIVE_API_URL = "https://garnett-teaser-204821439481.us-central1.run.app/teaser";
   const LOCAL_API_URL = "http://localhost:8080/teaser";
-  const API_URL = /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname)
-    ? LOCAL_API_URL
-    : LIVE_API_URL;
+  const CLOUD_RUN_API_URL = "https://garnett-teaser-204821439481.us-central1.run.app/teaser";
+  const host = window.location.hostname.toLowerCase();
+  const isLocal = host === "localhost" || host === "127.0.0.1";
+  const API_URL = isLocal ? LOCAL_API_URL : CLOUD_RUN_API_URL;
 
-  function parseListingInput(raw) {
-    const value = String(raw || "").trim();
-    if (!value) return { type: "empty" };
-    if (/ebay\.us/i.test(value)) return { type: "short", shortUrl: value };
-    if (/^\d{12}$/.test(value)) {
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function money(value) {
+    const num = Number(value);
+    if (!Number.isFinite(num)) return "N/A";
+    return num.toLocaleString(undefined, { style: "currency", currency: "USD" });
+  }
+
+  function parsePrice(value) {
+    const normalized = String(value || "").replace(/[^0-9.]/g, "");
+    const buy = Number(normalized);
+    if (!Number.isFinite(buy) || buy <= 0) return null;
+    return buy;
+  }
+
+  function canonicalUrlFromItemId(itemId) {
+    return `https://www.ebay.com/itm/${itemId}`;
+  }
+
+  function parseListingInput(value) {
+    const raw = String(value || "").trim();
+    if (!raw) {
+      return { ok: false, helper: "Paste a full /itm URL or a 12-digit item ID." };
+    }
+
+    const idOnly = raw.match(/^\d{12}$/);
+    if (idOnly) {
       return {
-        type: "ok",
-        itemId: value,
-        canonicalUrl: `https://www.ebay.com/itm/${value}`,
-        matchType: "raw",
+        ok: true,
+        itemId: idOnly[0],
+        canonicalUrl: canonicalUrlFromItemId(idOnly[0]),
+        helper: "Raw 12-digit item ID detected.",
       };
     }
 
-    let decoded = value;
+    let candidate = raw;
+    if (!/^https?:\/\//i.test(candidate)) {
+      candidate = `https://${candidate}`;
+    }
+
+    let parsedUrl;
     try {
-      decoded = decodeURIComponent(value);
-    } catch {}
-    const haystack = `${value} ${decoded}`;
-    const itmMatch = haystack.match(/\/itm\/(?:[^/?#]*\/)?(\d{12})/i);
-    if (itmMatch?.[1]) {
-      return {
-        type: "ok",
-        itemId: itmMatch[1],
-        canonicalUrl: `https://www.ebay.com/itm/${itmMatch[1]}`,
-        matchType: "itm",
-      };
-    }
-    if (/ebay\./i.test(haystack)) {
-      const anyId = haystack.match(/(\d{12})/);
-      if (anyId?.[1]) {
+      parsedUrl = new URL(candidate);
+    } catch (_error) {
+      const looseId = raw.match(/\b(\d{12})\b/);
+      if (looseId) {
         return {
-          type: "ok",
-          itemId: anyId[1],
-          canonicalUrl: `https://www.ebay.com/itm/${anyId[1]}`,
-          matchType: "generic",
+          ok: true,
+          itemId: looseId[1],
+          canonicalUrl: canonicalUrlFromItemId(looseId[1]),
+          helper: "12-digit item ID detected.",
         };
       }
+      return { ok: false, helper: "Paste a valid eBay /itm URL or 12-digit item ID." };
     }
-    return { type: "invalid" };
-  }
 
-  function updateDetectionPanel(parsed) {
-    if (!parsed || parsed.type !== "ok") {
-      detectPanel.style.display = "none";
-      detectedWarning.style.display = "none";
-      detectedItemId.textContent = "—";
-      detectedCanonicalUrl.textContent = "—";
-      return;
+    const hostname = parsedUrl.hostname.toLowerCase();
+    const searchable = `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
+    const isEbayShort = hostname === "ebay.us" || hostname.endsWith(".ebay.us");
+    const isEbayHost =
+      hostname === "ebay.com" ||
+      hostname.endsWith(".ebay.com") ||
+      hostname === "www.ebay.ca" ||
+      hostname.endsWith(".ebay.ca") ||
+      hostname.includes("ebay.");
+
+    if (isEbayShort) {
+      const shortId = searchable.match(/\b(\d{12})\b/);
+      if (shortId) {
+        return {
+          ok: true,
+          itemId: shortId[1],
+          canonicalUrl: canonicalUrlFromItemId(shortId[1]),
+          helper: "ebay.us short link with item ID detected.",
+        };
+      }
+      return {
+        ok: false,
+        helper: "Detected ebay.us short link. Open it once, then paste the final /itm URL or 12-digit item ID.",
+      };
     }
-    detectPanel.style.display = "block";
-    detectedItemId.textContent = parsed.itemId || "—";
-    detectedCanonicalUrl.textContent = parsed.canonicalUrl || "—";
-    detectedWarning.style.display = parsed.matchType === "generic" ? "block" : "none";
+
+    if (!isEbayHost) {
+      return { ok: false, helper: "Use an eBay item link or a 12-digit item ID." };
+    }
+
+    const itemMatch =
+      searchable.match(/\/itm\/(?:[^/?#]+\/)?(\d{12})(?:[/?#]|$)/i) ||
+      searchable.match(/\/itm\/(\d{12})(?:[/?#]|$)/i) ||
+      searchable.match(/[?&](?:item|itemid|itm)=(\d{12})(?:&|$)/i) ||
+      searchable.match(/\b(\d{12})\b/);
+
+    if (!itemMatch) {
+      return { ok: false, helper: "Could not detect a 12-digit item ID from that URL." };
+    }
+
+    return {
+      ok: true,
+      itemId: itemMatch[1],
+      canonicalUrl: canonicalUrlFromItemId(itemMatch[1]),
+      helper: "eBay listing URL detected.",
+    };
   }
 
-  function clearInlineMessage() {
-    inlineMsg.style.display = "none";
-    inlineMsg.textContent = "";
-    openShortLinkBtn.style.display = "none";
-    openShortLinkBtn.href = "#";
+  function renderResultMessage(message) {
+    resultBox.innerHTML = `<div>${escapeHtml(message)}</div>`;
   }
 
-  function money(n) {
-    const x = Number(n);
-    if (!Number.isFinite(x)) return "N/A";
-    return x.toLocaleString(undefined, { style: "currency", currency: "USD" });
+  function renderResultError(message) {
+    resultBox.innerHTML = `<div style="color:#ff8f96;font-weight:700;">${escapeHtml(message)}</div>`;
   }
 
-  urlInput.addEventListener("input", () => {
-    updateDetectionPanel(parseListingInput(urlInput.value));
-  });
+  function renderDebugDetails(debugPayload) {
+    const debugJson = escapeHtml(JSON.stringify(debugPayload || {}, null, 2));
+    return `
+      <details style="margin-top:10px;">
+        <summary style="cursor:pointer;color:rgba(255,255,255,0.78);font-weight:700;">Debug</summary>
+        <pre style="margin-top:8px;padding:10px;border-radius:10px;background:rgba(0,0,0,0.28);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.80);overflow:auto;font-size:11.5px;line-height:1.35;">${debugJson}</pre>
+      </details>
+    `;
+  }
+
+  function renderBackendError(data, parsedListing) {
+    const reason = escapeHtml(data?.reason || "UNKNOWN");
+    const errorMsg = escapeHtml(data?.error || "No backend error message returned.");
+    const retryAfterSec = Number(data?.retryAfterSec);
+    const retryText =
+      Number.isFinite(retryAfterSec) && retryAfterSec > 0
+        ? `${retryAfterSec}s (~${(retryAfterSec / 60).toFixed(1)} min)`
+        : "N/A";
+    const titleSource = escapeHtml(data?.debug?.titleSource || "N/A");
+    const itemId = escapeHtml(data?.itemId || parsedListing?.itemId || "-");
+
+    resultBox.innerHTML = `
+      <div class="resultHeader">
+        <span class="resultVerdict warn">${reason}</span>
+        <span class="resultConfidence">Backend returned ok=false</span>
+      </div>
+      <div class="resultGrid">
+        <div class="resultCell">
+          <span class="resultCellLabel">Item ID</span>
+          <span class="resultCellValue">${itemId}</span>
+        </div>
+        <div class="resultCell">
+          <span class="resultCellLabel">Retry After</span>
+          <span class="resultCellValue">${escapeHtml(retryText)}</span>
+        </div>
+        <div class="resultCell">
+          <span class="resultCellLabel">Title Source</span>
+          <span class="resultCellValue">${titleSource}</span>
+        </div>
+      </div>
+      <div class="resultMeta"><strong style="color:rgba(255,255,255,0.82)">Error:</strong> ${errorMsg}</div>
+      ${renderDebugDetails(data?.debug || {})}
+    `;
+  }
+
+  function renderResultData(data, parsedListing) {
+    const verdict = String(data?.verdict || "CHECK").toUpperCase();
+    const verdictClass = verdict === "PASS" ? "pass" : verdict === "FAIL" ? "fail" : "warn";
+    const confidence = escapeHtml(data?.confidence || "N/A");
+    const marketPrice = money(data?.marketPrice);
+    const buyPrice = money(data?.buyPrice);
+    const marginPct = Number(data?.marginPct);
+    const marginText = Number.isFinite(marginPct) ? `${marginPct.toFixed(0)}%` : "N/A";
+    const compsCount = Number(data?.compsCount);
+    const compsText = Number.isFinite(compsCount) ? String(compsCount) : "N/A";
+    const conditionText = data?.condition ? escapeHtml(data.condition) : "";
+    const itemId = escapeHtml(data?.itemId || parsedListing?.itemId || "-");
+    const titleSource = data?.debug?.titleSource ? escapeHtml(data.debug.titleSource) : "";
+    const title = data?.title ? escapeHtml(data.title) : "";
+    const why = data?.why ? escapeHtml(data.why) : "";
+
+    resultBox.innerHTML = `
+      <div class="resultHeader">
+        <span class="resultVerdict ${verdictClass}">${escapeHtml(verdict)}</span>
+        <span class="resultConfidence">Confidence: ${confidence}</span>
+      </div>
+      <div class="resultGrid">
+        <div class="resultCell">
+          <span class="resultCellLabel">Market</span>
+          <span class="resultCellValue">${marketPrice}</span>
+        </div>
+        <div class="resultCell">
+          <span class="resultCellLabel">Buy</span>
+          <span class="resultCellValue">${buyPrice}</span>
+        </div>
+        <div class="resultCell">
+          <span class="resultCellLabel">Margin</span>
+          <span class="resultCellValue">${escapeHtml(marginText)}</span>
+        </div>
+        <div class="resultCell">
+          <span class="resultCellLabel">Comps</span>
+          <span class="resultCellValue">${escapeHtml(compsText)}</span>
+        </div>
+        ${conditionText ? `
+        <div class="resultCell">
+          <span class="resultCellLabel">Condition</span>
+          <span class="resultCellValue">${conditionText}</span>
+        </div>` : ""}
+      </div>
+      <div class="resultMeta">Item ID: ${itemId}</div>
+      ${titleSource ? `<div class="resultMeta">Title Source: ${titleSource}</div>` : ""}
+      ${title ? `<div class="resultMeta">${title}</div>` : ""}
+      ${why ? `<div class="resultMeta">${why}</div>` : ""}
+      ${renderDebugDetails(data?.debug || {})}
+    `;
+  }
+
+  function updateUrlAssist() {
+    const parsed = parseListingInput(urlInput.value);
+    const hasInput = String(urlInput.value || "").trim().length > 0;
+
+    if (!hasInput) {
+      urlAssist.hidden = true;
+      copyCanonicalBtn.dataset.canonicalUrl = "";
+      copyCanonicalBtn.disabled = true;
+      return parsed;
+    }
+
+    urlAssist.hidden = false;
+    detectedItemIdEl.textContent = parsed.ok ? parsed.itemId : "-";
+    canonicalUrlEl.textContent = parsed.ok ? parsed.canonicalUrl : "-";
+    urlAssistHint.textContent = parsed.helper;
+    copyCanonicalBtn.dataset.canonicalUrl = parsed.ok ? parsed.canonicalUrl : "";
+    copyCanonicalBtn.disabled = !parsed.ok;
+    return parsed;
+  }
 
   copyCanonicalBtn.addEventListener("click", async () => {
-    const text = detectedCanonicalUrl.textContent || "";
-    if (!text || text === "—") return;
+    const canonicalUrl = copyCanonicalBtn.dataset.canonicalUrl || "";
+    if (!canonicalUrl) return;
     try {
-      await navigator.clipboard.writeText(text);
-      copyCanonicalBtn.textContent = "Copied";
-      setTimeout(() => {
-        copyCanonicalBtn.textContent = "Copy";
-      }, 1200);
-    } catch {
-      copyCanonicalBtn.textContent = "Copy failed";
-      setTimeout(() => {
-        copyCanonicalBtn.textContent = "Copy";
-      }, 1200);
+      await navigator.clipboard.writeText(canonicalUrl);
+      urlAssistHint.textContent = "Canonical URL copied.";
+    } catch (_error) {
+      urlAssistHint.textContent = "Copy failed in this browser. Copy the canonical URL manually.";
     }
   });
 
-  updateDetectionPanel(parseListingInput(urlInput.value));
+  urlInput.addEventListener("input", updateUrlAssist);
 
-  runBtn.addEventListener("click", async () => {
-    const parsed = parseListingInput(urlInput.value);
-    updateDetectionPanel(parsed);
-    const buyPrice = Number((priceInput.value || "").replace(/[^0-9.]/g, ""));
-    const condition = conditionSelect?.value || "unknown";
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-    clearInlineMessage();
-    if (parsed.type === "empty") {
-      resultBox.innerHTML = "❌ Paste an eBay listing URL or 12-digit item ID.";
-      return;
-    }
-    if (parsed.type === "invalid") {
-      resultBox.innerHTML = "❌ Paste a full eBay URL containing /itm/{12-digit-id} or a raw 12-digit item ID.";
-      return;
-    }
-    if (parsed.type === "short") {
-      inlineMsg.textContent = "This is a short eBay link. Tap it to open eBay, then copy the full URL from your browser and paste it here.";
-      inlineMsg.style.display = "block";
-      openShortLinkBtn.href = parsed.shortUrl;
-      openShortLinkBtn.style.display = "inline-flex";
-      resultBox.innerHTML = "⚠️ Short eBay links are not supported for direct submission.";
-      return;
-    }
-    if (!buyPrice || buyPrice <= 0) {
-      resultBox.innerHTML = "❌ Enter a valid buy price.";
+    const parsedListing = updateUrlAssist();
+    if (!parsedListing.ok) {
+      renderResultError(parsedListing.helper);
       return;
     }
 
-    const listingUrl = parsed.canonicalUrl;
+    const buyPrice = parsePrice(priceInput.value);
+    if (!buyPrice) {
+      renderResultError("Enter a valid buy price.");
+      return;
+    }
+
+    const condition = String(conditionSelect?.value || "unknown").trim() || "unknown";
+
     runBtn.disabled = true;
-    runBtn.textContent = "Running…";
-    resultBox.innerHTML = "Checking the market…";
+    runBtn.textContent = "Running...";
+    renderResultMessage("Checking the market...");
 
     try {
-      console.debug("[Garnett teaser] request URL:", API_URL);
-      const resp = await fetch(API_URL, {
+      console.info("[Teaser] Request URL:", API_URL);
+      const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ listingUrl, buyPrice, condition }),
+        body: JSON.stringify({
+          listingUrl: parsedListing.canonicalUrl,
+          buyPrice,
+          condition,
+        }),
       });
-      console.debug("[Garnett teaser] response status:", resp.status);
 
-      const rawText = await resp.text();
-      let data = null;
-      try {
-        data = rawText ? JSON.parse(rawText) : null;
-      } catch {
-        data = null;
-      }
-      console.debug("[Garnett teaser] response data:", data);
-
-      if (!resp.ok || !data || typeof data !== "object") {
-        throw new Error((data && data.error) || rawText || "Request failed");
+      console.info("[Teaser] Response status:", response.status);
+      const data = await response.json().catch(() => null);
+      console.info("[Teaser] Parsed JSON response:", data);
+      if (!response.ok) {
+        throw new Error(data?.error || `Request failed (${response.status})`);
       }
 
-      if (data.ok === false) {
-        const retryAfter = Number(data.retryAfterSec);
-        const titleSource = data?.debug?.titleSource
-          ? `<span style="color:rgba(255,255,255,0.65)">titleSource: ${data.debug.titleSource}</span>`
-          : "";
-        resultBox.innerHTML = `
-          <div style="display:grid;gap:6px;">
-            <strong style="font-size:16px;color:rgba(255,180,100,0.95);">⚠️ ${data.reason || "REQUEST_BLOCKED"}</strong>
-            <div>${data.error || "Request could not be completed."}</div>
-            ${Number.isFinite(retryAfter) && retryAfter > 0 ? `<span style="color:rgba(255,255,255,0.65)">Retry in ${retryAfter}s</span>` : ""}
-            ${titleSource}
-          </div>
-        `;
+      if (!data || data.ok === false) {
+        renderBackendError(data || {}, parsedListing);
         return;
       }
 
-      const verdict = String(data.verdict || "UNKNOWN");
-      const verdictColor =
-        verdict === "PASS"
-          ? "rgba(0,255,170,0.95)"
-          : verdict === "FAIL"
-            ? "rgba(255,120,120,0.95)"
-            : "rgba(255,215,0,0.95)";
-      const debugJson = JSON.stringify(data.debug || {}, null, 2);
-
-      resultBox.innerHTML = `
-        <div style="display:grid;gap:8px;">
-          <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;">
-            <strong style="font-size:16px;color:${verdictColor};">${verdict}</strong>
-            <span style="font-size:12px;color:rgba(255,255,255,0.7);">Confidence: <strong style="color:rgba(255,255,255,0.95);">${data.confidence || "—"}</strong></span>
-          </div>
-          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;">
-            <div><div style="font-size:11px;color:rgba(255,255,255,0.6);">Market</div><div style="font-weight:800;">${money(data.marketPrice)}</div></div>
-            <div><div style="font-size:11px;color:rgba(255,255,255,0.6);">Margin</div><div style="font-weight:800;">${Number(data.marginPct || 0).toFixed(0)}%</div></div>
-            <div><div style="font-size:11px;color:rgba(255,255,255,0.6);">Comps</div><div style="font-weight:800;">${Number.isFinite(Number(data.compsCount)) ? data.compsCount : "—"}</div></div>
-            <div><div style="font-size:11px;color:rgba(255,255,255,0.6);">Buy</div><div style="font-weight:800;">${money(data.buyPrice)}</div></div>
-          </div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.75);">${data.title || ""}</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.6);">Item ID: ${data.itemId || "—"} · Condition: ${data.condition || "—"}</div>
-          ${data?.debug?.titleSource ? `<div style="font-size:11px;color:rgba(255,255,255,0.6);">titleSource: ${data.debug.titleSource}</div>` : ""}
-          <details>
-            <summary style="cursor:pointer;font-size:12px;color:rgba(255,255,255,0.75);">Debug</summary>
-            <pre style="margin:8px 0 0;white-space:pre-wrap;word-break:break-word;font-size:11px;color:rgba(255,255,255,0.75);">${debugJson}</pre>
-          </details>
-        </div>
-      `;
-    } catch (e) {
-      resultBox.innerHTML = `❌ ${e.message}`;
+      renderResultData(data, parsedListing);
+    } catch (error) {
+      renderResultError(error?.message || "Unexpected error while calling teaser API.");
     } finally {
       runBtn.disabled = false;
-      runBtn.textContent = "Get Teaser Verdict (Free)";
+      runBtn.textContent = "Get Free Teaser Verdict";
     }
   });
 })();
