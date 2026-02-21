@@ -435,6 +435,19 @@
           rel="noopener noreferrer"
           style="display:none;margin-top:8px;width:max-content;"
         >Open link</a>
+        <div
+          id="detectPanel"
+          style="display:none;margin-top:8px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);font-size:12px;color:rgba(255,255,255,0.82);"
+        >
+          <div>Detected Item ID: <strong id="detectedItemId">—</strong></div>
+          <div style="margin-top:4px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <span>Canonical URL: <span id="detectedCanonicalUrl">—</span></span>
+            <button id="copyCanonicalBtn" type="button" class="btn btnGhost" style="padding:6px 10px;font-size:11px;">Copy</button>
+          </div>
+          <div id="detectedWarning" style="display:none;margin-top:6px;color:rgba(255,215,0,0.92);">
+            Could not confirm an <code>/itm/</code> match. Verify this extracted ID before submitting.
+          </div>
+        </div>
 
         <div class="row2">
           <div>
@@ -533,6 +546,11 @@
   const conditionSelect = document.getElementById("conditionSelect");
   const inlineMsg = document.getElementById("inlineMsg");
   const openShortLinkBtn = document.getElementById("openShortLinkBtn");
+  const detectPanel = document.getElementById("detectPanel");
+  const detectedItemId = document.getElementById("detectedItemId");
+  const detectedCanonicalUrl = document.getElementById("detectedCanonicalUrl");
+  const detectedWarning = document.getElementById("detectedWarning");
+  const copyCanonicalBtn = document.getElementById("copyCanonicalBtn");
   const resultBox = document.getElementById("resultBox");
 
   const LIVE_API_URL = "https://garnett-teaser-204821439481.us-central1.run.app/teaser";
@@ -546,7 +564,12 @@
     if (!value) return { type: "empty" };
     if (/ebay\.us/i.test(value)) return { type: "short", shortUrl: value };
     if (/^\d{12}$/.test(value)) {
-      return { type: "ok", itemId: value, canonicalUrl: `https://www.ebay.com/itm/${value}` };
+      return {
+        type: "ok",
+        itemId: value,
+        canonicalUrl: `https://www.ebay.com/itm/${value}`,
+        matchType: "raw",
+      };
     }
 
     let decoded = value;
@@ -556,15 +579,39 @@
     const haystack = `${value} ${decoded}`;
     const itmMatch = haystack.match(/\/itm\/(?:[^/?#]*\/)?(\d{12})/i);
     if (itmMatch?.[1]) {
-      return { type: "ok", itemId: itmMatch[1], canonicalUrl: `https://www.ebay.com/itm/${itmMatch[1]}` };
+      return {
+        type: "ok",
+        itemId: itmMatch[1],
+        canonicalUrl: `https://www.ebay.com/itm/${itmMatch[1]}`,
+        matchType: "itm",
+      };
     }
     if (/ebay\./i.test(haystack)) {
       const anyId = haystack.match(/(\d{12})/);
       if (anyId?.[1]) {
-        return { type: "ok", itemId: anyId[1], canonicalUrl: `https://www.ebay.com/itm/${anyId[1]}` };
+        return {
+          type: "ok",
+          itemId: anyId[1],
+          canonicalUrl: `https://www.ebay.com/itm/${anyId[1]}`,
+          matchType: "generic",
+        };
       }
     }
     return { type: "invalid" };
+  }
+
+  function updateDetectionPanel(parsed) {
+    if (!parsed || parsed.type !== "ok") {
+      detectPanel.style.display = "none";
+      detectedWarning.style.display = "none";
+      detectedItemId.textContent = "—";
+      detectedCanonicalUrl.textContent = "—";
+      return;
+    }
+    detectPanel.style.display = "block";
+    detectedItemId.textContent = parsed.itemId || "—";
+    detectedCanonicalUrl.textContent = parsed.canonicalUrl || "—";
+    detectedWarning.style.display = parsed.matchType === "generic" ? "block" : "none";
   }
 
   function clearInlineMessage() {
@@ -580,8 +627,32 @@
     return x.toLocaleString(undefined, { style: "currency", currency: "USD" });
   }
 
+  urlInput.addEventListener("input", () => {
+    updateDetectionPanel(parseListingInput(urlInput.value));
+  });
+
+  copyCanonicalBtn.addEventListener("click", async () => {
+    const text = detectedCanonicalUrl.textContent || "";
+    if (!text || text === "—") return;
+    try {
+      await navigator.clipboard.writeText(text);
+      copyCanonicalBtn.textContent = "Copied";
+      setTimeout(() => {
+        copyCanonicalBtn.textContent = "Copy";
+      }, 1200);
+    } catch {
+      copyCanonicalBtn.textContent = "Copy failed";
+      setTimeout(() => {
+        copyCanonicalBtn.textContent = "Copy";
+      }, 1200);
+    }
+  });
+
+  updateDetectionPanel(parseListingInput(urlInput.value));
+
   runBtn.addEventListener("click", async () => {
     const parsed = parseListingInput(urlInput.value);
+    updateDetectionPanel(parsed);
     const buyPrice = Number((priceInput.value || "").replace(/[^0-9.]/g, ""));
     const condition = conditionSelect?.value || "unknown";
 
