@@ -523,7 +523,11 @@
   </div>
  <script>
 (() => {
-  const runBtn = document.getElementById("runBtn");
+  const originalRunBtn = document.getElementById("runBtn");
+  const cleanRunBtn = originalRunBtn.cloneNode(true);
+  originalRunBtn.replaceWith(cleanRunBtn);
+
+  const runBtn = cleanRunBtn;
   const urlInput = document.getElementById("listingInput");
   const priceInput = document.getElementById("buyPriceInput");
   const conditionSelect = document.getElementById("conditionSelect");
@@ -544,9 +548,21 @@
     if (/^\d{12}$/.test(value)) {
       return { type: "ok", itemId: value, canonicalUrl: `https://www.ebay.com/itm/${value}` };
     }
-    const m = value.match(/\/itm\/(\d{12})/i);
-    if (m?.[1]) {
-      return { type: "ok", itemId: m[1], canonicalUrl: `https://www.ebay.com/itm/${m[1]}` };
+
+    let decoded = value;
+    try {
+      decoded = decodeURIComponent(value);
+    } catch {}
+    const haystack = `${value} ${decoded}`;
+    const itmMatch = haystack.match(/\/itm\/(?:[^/?#]*\/)?(\d{12})/i);
+    if (itmMatch?.[1]) {
+      return { type: "ok", itemId: itmMatch[1], canonicalUrl: `https://www.ebay.com/itm/${itmMatch[1]}` };
+    }
+    if (/ebay\./i.test(haystack)) {
+      const anyId = haystack.match(/(\d{12})/);
+      if (anyId?.[1]) {
+        return { type: "ok", itemId: anyId[1], canonicalUrl: `https://www.ebay.com/itm/${anyId[1]}` };
+      }
     }
     return { type: "invalid" };
   }
@@ -558,10 +574,10 @@
     openShortLinkBtn.href = "#";
   }
 
-  function money(n){
+  function money(n) {
     const x = Number(n);
     if (!Number.isFinite(x)) return "N/A";
-    return x.toLocaleString(undefined, { style:"currency", currency:"USD" });
+    return x.toLocaleString(undefined, { style: "currency", currency: "USD" });
   }
 
   runBtn.addEventListener("click", async () => {
@@ -570,8 +586,14 @@
     const condition = conditionSelect?.value || "unknown";
 
     clearInlineMessage();
-    if (parsed.type === "empty") return (resultBox.innerHTML = "❌ Paste an eBay listing URL or 12-digit item ID.");
-    if (parsed.type === "invalid") return (resultBox.innerHTML = "❌ Paste a full eBay URL containing /itm/{12-digit-id} or a raw 12-digit item ID.");
+    if (parsed.type === "empty") {
+      resultBox.innerHTML = "❌ Paste an eBay listing URL or 12-digit item ID.";
+      return;
+    }
+    if (parsed.type === "invalid") {
+      resultBox.innerHTML = "❌ Paste a full eBay URL containing /itm/{12-digit-id} or a raw 12-digit item ID.";
+      return;
+    }
     if (parsed.type === "short") {
       inlineMsg.textContent = "This is a short eBay link. Tap it to open eBay, then copy the full URL from your browser and paste it here.";
       inlineMsg.style.display = "block";
@@ -580,9 +602,12 @@
       resultBox.innerHTML = "⚠️ Short eBay links are not supported for direct submission.";
       return;
     }
-    if (!buyPrice || buyPrice <= 0) return (resultBox.innerHTML = "❌ Enter a valid buy price.");
-    const listingUrl = parsed.canonicalUrl;
+    if (!buyPrice || buyPrice <= 0) {
+      resultBox.innerHTML = "❌ Enter a valid buy price.";
+      return;
+    }
 
+    const listingUrl = parsed.canonicalUrl;
     runBtn.disabled = true;
     runBtn.textContent = "Running…";
     resultBox.innerHTML = "Checking the market…";
@@ -592,7 +617,7 @@
       const resp = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ listingUrl, buyPrice, condition })
+        body: JSON.stringify({ listingUrl, buyPrice, condition }),
       });
       console.debug("[Garnett teaser] response status:", resp.status);
 
@@ -604,12 +629,16 @@
         data = null;
       }
       console.debug("[Garnett teaser] response data:", data);
+
       if (!resp.ok || !data || typeof data !== "object") {
         throw new Error((data && data.error) || rawText || "Request failed");
       }
+
       if (data.ok === false) {
         const retryAfter = Number(data.retryAfterSec);
-        const titleSource = data?.debug?.titleSource ? `<br><span style="color:rgba(255,255,255,0.65)">titleSource: ${data.debug.titleSource}</span>` : "";
+        const titleSource = data?.debug?.titleSource
+          ? `<span style="color:rgba(255,255,255,0.65)">titleSource: ${data.debug.titleSource}</span>`
+          : "";
         resultBox.innerHTML = `
           <div style="display:grid;gap:6px;">
             <strong style="font-size:16px;color:rgba(255,180,100,0.95);">⚠️ ${data.reason || "REQUEST_BLOCKED"}</strong>
@@ -623,10 +652,13 @@
 
       const verdict = String(data.verdict || "UNKNOWN");
       const verdictColor =
-        verdict === "PASS" ? "rgba(0,255,170,0.95)" :
-        verdict === "FAIL" ? "rgba(255,120,120,0.95)" :
-        "rgba(255,215,0,0.95)";
+        verdict === "PASS"
+          ? "rgba(0,255,170,0.95)"
+          : verdict === "FAIL"
+            ? "rgba(255,120,120,0.95)"
+            : "rgba(255,215,0,0.95)";
       const debugJson = JSON.stringify(data.debug || {}, null, 2);
+
       resultBox.innerHTML = `
         <div style="display:grid;gap:8px;">
           <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;">
