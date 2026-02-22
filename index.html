@@ -1254,6 +1254,7 @@
   const successEl = document.getElementById("gwWaitlist-success");
   const emailPattern = /^[^s@]+@[^s@]+.[^s@]+$/;
   const WAITLIST_STORAGE_KEY = "garnett_waitlist_v1";
+  const WAITLIST_FORMSPREE_URL = "https://formspree.io/f/meelrpab";
   const DUPLICATE_WINDOW_MS = 24 * 60 * 60 * 1000;
 
   function showError(message) {
@@ -1308,7 +1309,7 @@
     }
   }
 
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
     showSuccess("");
 
@@ -1336,9 +1337,36 @@
       return;
     }
 
-    showSuccess("You’re on the list. We’ll let you know when Garnett opens.");
     if (saveResult.status === "saved") {
       console.info("[gwWaitlist] total saved", saveResult.count);
+      const remotePayload = {
+        name: payload.name,
+        email: payload.email,
+        useCase: payload.useCase,
+        source: "landing_page",
+        createdAt: payload.createdAt || new Date().toISOString(),
+      };
+
+      try {
+        const remoteResp = await fetch(WAITLIST_FORMSPREE_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(remotePayload),
+        });
+
+        if (!remoteResp.ok) {
+          throw new Error(`Formspree request failed (${remoteResp.status})`);
+        }
+        showSuccess("You’re on the list. We’ll let you know when Garnett opens.");
+      } catch (error) {
+        console.warn("[gwWaitlist] remote submit failed", error);
+        showSuccess("You’re on the list locally. Remote submit failed — please try again later.");
+      }
+    } else {
+      showSuccess("You’re on the list. We’ll let you know when Garnett opens.");
     }
     clearWaitlistFields();
   });
