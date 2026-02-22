@@ -511,6 +511,124 @@
       margin-top: 6px;
     }
 
+
+    /* Early access waitlist */
+    .gwWaitlistWrap{
+      margin: 8px 0 16px;
+    }
+
+    .gwWaitlistCard{
+      background: rgba(18,18,22,0.62);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+    }
+
+    .gwWaitlistTitle{
+      margin: 0 0 6px;
+      font-size: 18px;
+      font-weight: 950;
+      letter-spacing: 0.2px;
+      color: rgba(255,255,255,0.95);
+    }
+
+    .gwWaitlistText{
+      margin: 0 0 12px;
+      color: rgba(255,255,255,0.68);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .gwWaitlistForm{
+      margin: 0;
+    }
+
+    .gwWaitlistGrid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .gwWaitlistField{ min-width: 0; }
+    .gwWaitlistFieldFull{ grid-column: 1 / -1; }
+
+    .gwWaitlistLabel{
+      display:block;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.7px;
+      color: rgba(255,215,0,0.80);
+      margin: 0 0 6px;
+    }
+
+    .gwWaitlistInput,
+    .gwWaitlistSelect{
+      width:100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(12,12,16,0.84);
+      color: rgba(255,255,255,0.92);
+      outline: none;
+      font-size: 13px;
+    }
+
+    .gwWaitlistInput::placeholder{ color: rgba(255,255,255,0.42); }
+
+    .gwWaitlistInput:focus,
+    .gwWaitlistSelect:focus{
+      border-color: rgba(255,215,0,0.42);
+      box-shadow: 0 0 0 3px rgba(255,215,0,0.14);
+    }
+
+    .gwWaitlistActions{
+      margin-top: 12px;
+      display:flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .gwWaitlistBtn{
+      border: 1px solid rgba(255,215,0,0.35);
+      border-radius: 12px;
+      background: linear-gradient(180deg, var(--gold), var(--gold2));
+      color: #0a0a0a;
+      font-weight: 950;
+      letter-spacing: 0.2px;
+      font-size: 13px;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+
+    .gwWaitlistTrust{
+      margin: 0;
+      color: rgba(255,255,255,0.56);
+      font-size: 11.5px;
+      line-height: 1.4;
+    }
+
+    .gwWaitlistError{
+      margin: 0;
+      font-size: 12px;
+      color: #ff8f96;
+      font-weight: 700;
+    }
+
+    .gwWaitlistSuccess{
+      margin: 0;
+      font-size: 12.5px;
+      color: rgba(104,226,151,0.92);
+      font-weight: 800;
+    }
+
+    @media (min-width: 760px){
+      .gwWaitlistGrid{
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
     /* Mid cards */
     .midCards{
       display:grid;
@@ -701,6 +819,42 @@
           <button id="run-btn" class="runBtn" type="submit">Get Free Teaser Verdict</button>
         </form>
         <div id="teaser-result" class="resultBox" aria-live="polite">Ready.</div>
+      </div>
+    </section>
+
+
+    <section class="gwWaitlistWrap" id="early-access">
+      <div class="gwWaitlistCard">
+        <h3 class="gwWaitlistTitle">Want early access?</h3>
+        <p class="gwWaitlistText">Get notified when Garnett Work opens to more users.</p>
+        <form id="gwWaitlist-form" class="gwWaitlistForm" novalidate>
+          <div class="gwWaitlistGrid">
+            <div class="gwWaitlistField">
+              <label class="gwWaitlistLabel" for="gwWaitlist-name">NAME (OPTIONAL)</label>
+              <input id="gwWaitlist-name" class="gwWaitlistInput" type="text" placeholder="Your name" />
+            </div>
+            <div class="gwWaitlistField">
+              <label class="gwWaitlistLabel" for="gwWaitlist-email">EMAIL (REQUIRED)</label>
+              <input id="gwWaitlist-email" class="gwWaitlistInput" type="email" placeholder="you@example.com" required />
+            </div>
+            <div class="gwWaitlistField gwWaitlistFieldFull">
+              <label class="gwWaitlistLabel" for="gwWaitlist-usecase">WHAT WOULD YOU USE IT FOR?</label>
+              <select id="gwWaitlist-usecase" class="gwWaitlistSelect">
+                <option>eBay flips</option>
+                <option>Facebook Marketplace</option>
+                <option>Apple products</option>
+                <option>Sneakers</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="gwWaitlistActions">
+            <button class="gwWaitlistBtn" type="submit">Join Early Access</button>
+            <p class="gwWaitlistTrust">No spam. Early testers get priority access.</p>
+            <p id="gwWaitlist-error" class="gwWaitlistError" hidden></p>
+            <p id="gwWaitlist-success" class="gwWaitlistSuccess" hidden></p>
+          </div>
+        </form>
       </div>
     </section>
 
@@ -1082,6 +1236,111 @@
       runBtn.disabled = false;
       runBtn.textContent = "Get Free Teaser Verdict";
     }
+  });
+})();
+</script>
+
+
+<script>
+(() => {
+  const form = document.getElementById("gwWaitlist-form");
+  if (!form || form.dataset.bound === "true") return;
+  form.dataset.bound = "true";
+
+  const nameInput = document.getElementById("gwWaitlist-name");
+  const emailInput = document.getElementById("gwWaitlist-email");
+  const useCaseSelect = document.getElementById("gwWaitlist-usecase");
+  const errorEl = document.getElementById("gwWaitlist-error");
+  const successEl = document.getElementById("gwWaitlist-success");
+  const emailPattern = /^[^s@]+@[^s@]+.[^s@]+$/;
+  const WAITLIST_STORAGE_KEY = "garnett_waitlist_v1";
+  const DUPLICATE_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+  function showError(message) {
+    errorEl.textContent = message || "";
+    errorEl.hidden = !message;
+  }
+
+  function showSuccess(message) {
+    successEl.textContent = message || "";
+    successEl.hidden = !message;
+  }
+
+  function normalizeEmail(value) {
+    return String(value || "").trim().toLowerCase();
+  }
+
+  function clearWaitlistFields() {
+    if (nameInput) nameInput.value = "";
+    if (useCaseSelect) useCaseSelect.selectedIndex = 0;
+  }
+
+  function saveWaitlistEntry(entry) {
+    const nowMs = Date.now();
+    const normalizedEmail = normalizeEmail(entry?.email);
+
+    try {
+      let entries = [];
+      const raw = window.localStorage.getItem(WAITLIST_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) entries = parsed;
+      }
+
+      const duplicate = entries.some((item) => {
+        if (!item) return false;
+        if (normalizeEmail(item.email) !== normalizedEmail) return false;
+        const createdAtMs = Date.parse(item.createdAt);
+        if (!Number.isFinite(createdAtMs)) return false;
+        return nowMs - createdAtMs < DUPLICATE_WINDOW_MS;
+      });
+
+      if (duplicate) {
+        return { status: "duplicate", count: entries.length };
+      }
+
+      entries.push(entry);
+      window.localStorage.setItem(WAITLIST_STORAGE_KEY, JSON.stringify(entries));
+      return { status: "saved", count: entries.length };
+    } catch (error) {
+      console.warn("[gwWaitlist] localStorage unavailable", error);
+      return { status: "storage_unavailable" };
+    }
+  }
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    showSuccess("");
+
+    const email = String(emailInput?.value || "").trim();
+    if (!email || !emailPattern.test(email)) {
+      showError("Enter a valid email address.");
+      emailInput?.focus();
+      return;
+    }
+
+    showError("");
+    const payload = {
+      name: String(nameInput?.value || "").trim(),
+      email,
+      useCase: String(useCaseSelect?.value || "").trim(),
+      createdAt: new Date().toISOString(),
+      source: "landing_page",
+    };
+    console.info("[gwWaitlist] early access form submit", payload);
+    const saveResult = saveWaitlistEntry(payload);
+
+    if (saveResult.status === "duplicate") {
+      showSuccess("You’re already on the list — we’ve got you.");
+      clearWaitlistFields();
+      return;
+    }
+
+    showSuccess("You’re on the list. We’ll let you know when Garnett opens.");
+    if (saveResult.status === "saved") {
+      console.info("[gwWaitlist] total saved", saveResult.count);
+    }
+    clearWaitlistFields();
   });
 })();
 </script>
